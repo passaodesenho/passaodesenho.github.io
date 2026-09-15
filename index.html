@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#12B6B5">
+<title>Passa o Desenho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --roxo:#46178F;
+  --roxo-2:#381272;
+  --roxo-3:#25094F;
+  --lilas:#F1EBFA;
+  --lilas-2:#E2D6F3;
+  --tinta:#1B1035;
+  --cinza:#6B6385;
+  --vermelho:#E21B3C;
+  --azul:#1368CE;
+  --amarelo:#FFA602;
+  --verde:#26890C;
+  --r:18px;
+  --fundo:linear-gradient(180deg,#12B6B5 0%,#1A96B1 52%,#2A5E99 100%);
+  --escuro:rgba(0,48,84,.22);
+  --sombra:rgba(0,48,84,.3);
+  --suave:#DDF6F8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:#1A96B1;
+  color:#fff;
+  font-family:"Fredoka",system-ui,sans-serif;
+  font-weight:500;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer}
+input{font:inherit}
+:focus-visible{outline:4px solid var(--amarelo);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* formas do fundo */
+.shapes{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;background:var(--fundo)}
+.sh{position:absolute;display:block;opacity:.16}
+.sh.tri{width:280px;height:250px;background:var(--vermelho);clip-path:polygon(50% 0,100% 100%,0 100%);top:-50px;left:-70px;transform:rotate(-14deg)}
+.sh.dia{width:190px;height:190px;background:var(--azul);top:20%;right:-70px;transform:rotate(45deg);border-radius:22px}
+.sh.cir{width:260px;height:260px;border-radius:50%;background:var(--amarelo);bottom:-90px;left:6%}
+.sh.sqr{width:170px;height:170px;border-radius:26px;background:var(--verde);bottom:10%;right:5%;transform:rotate(12deg)}
+
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px 18px 72px}
+.wrap.wide{max-width:1280px}
+.screen{display:none}
+.screen.on{display:block}
+.hidden{display:none!important}
+.narrow{max-width:480px;margin:0 auto;text-align:center}
+
+/* marca */
+.logo-block{padding:44px 0 6px}
+.shape-row{display:flex;justify-content:center;gap:10px;margin-bottom:18px}
+.shape-row .s{width:30px;height:30px;display:block}
+.s.tri{background:var(--vermelho);clip-path:polygon(50% 4%,100% 96%,0 96%)}
+.s.dia{background:var(--azul);transform:rotate(45deg) scale(.76);border-radius:4px}
+.s.cir{background:var(--amarelo);border-radius:50%}
+.s.sqr{background:var(--verde);border-radius:6px;transform:scale(.84)}
+.logo{font-size:clamp(44px,11vw,70px);font-weight:700;line-height:.98;text-shadow:0 5px 0 var(--sombra)}
+.logo.small{font-size:clamp(30px,6vw,44px);text-shadow:0 4px 0 var(--sombra)}
+.tagline{margin:16px auto 0;max-width:38ch;font-size:18px;line-height:1.45;color:var(--suave);font-weight:400}
+
+/* blocos */
+.card{
+  background:#fff;color:var(--tinta);border-radius:var(--r);
+  padding:22px;margin-top:22px;box-shadow:0 8px 0 rgba(0,0,0,.18);text-align:left
+}
+.narrow .card{text-align:center}
+.narrow .card.left{text-align:left}
+h2{font-size:22px;font-weight:600;margin-bottom:14px}
+
+.field{display:block;margin-bottom:18px}
+.field>span{display:block;font-size:15px;color:var(--cinza);margin-bottom:7px}
+.field input,.manual input,.big-input{
+  width:100%;padding:13px 14px;border-radius:12px;background:#fff;
+  border:3px solid var(--lilas-2);color:var(--tinta);font-weight:600;font-size:17px
+}
+input::placeholder{color:#A79DBD;font-weight:500}
+input:focus{outline:none;border-color:var(--roxo)}
+input:disabled{background:var(--lilas);opacity:.6}
+input.bad{border-color:var(--vermelho);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.big-input{text-align:center;font-size:22px;padding:16px;margin-bottom:14px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 18px;border-radius:12px;font-weight:600;font-size:17px;
+  background:var(--lilas);color:var(--tinta);
+  box-shadow:0 5px 0 rgba(0,0,0,.2);
+  transition:transform .06s ease,box-shadow .06s ease,filter .15s ease;
+  user-select:none;-webkit-user-select:none
+}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.btn.dark{background:var(--tinta);color:#fff}
+.btn.green{background:var(--verde);color:#fff}
+.btn.blue{background:var(--azul);color:#fff}
+.btn.red{background:var(--vermelho);color:#fff}
+.btn.yellow{background:var(--amarelo);color:var(--tinta)}
+.btn.soft-red{background:#FFE4E9;color:#B0122E}
+.btn.big{font-size:20px;padding:16px 22px}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:0 5px 0 rgba(0,0,0,.2);filter:none}
+.btn svg,.tool svg{width:20px;height:20px;flex:none}
+
+.msg{margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFE4E9;color:#B0122E;font-size:15px;text-align:left}
+.msg:empty{display:none}
+.note{color:var(--cinza);font-size:15px;line-height:1.45;margin-top:12px;font-weight:400}
+.note:empty{display:none}
+.note.light{color:var(--suave)}
+
+.spinner{width:58px;height:58px;margin:0 auto;border-radius:50%;border:7px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* escolha de servidor */
+.srv-list{display:grid;gap:10px;margin-bottom:14px}
+.srv{display:flex;flex-direction:column;align-items:center;padding:14px;border-radius:12px;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.srv:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.srv:nth-child(4n+1){background:var(--vermelho)}
+.srv:nth-child(4n+2){background:var(--azul)}
+.srv:nth-child(4n+3){background:var(--amarelo);color:var(--tinta)}
+.srv:nth-child(4n+4){background:var(--verde)}
+.srv span{font-size:14px;opacity:.9}
+.srv b{font-size:22px;font-weight:600}
+
+/* fila */
+.wait{padding-top:26px}
+.pill-head{
+  display:block;width:fit-content;max-width:100%;margin:0 auto;
+  background:var(--escuro);border-radius:999px;padding:10px 20px;font-size:17px;line-height:1.35
+}
+.pill-head b{font-weight:600;color:var(--amarelo)}
+.ring{
+  width:min(80vw,330px);aspect-ratio:1;margin:26px auto 0;border-radius:50%;
+  background:var(--escuro);
+  box-shadow:inset 0 0 0 14px rgba(255,255,255,.16),0 8px 0 var(--sombra);
+  display:grid;place-items:center;padding:20px
+}
+.ring-num{font-size:clamp(64px,19vw,104px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.ring-num.soon{font-size:clamp(46px,13vw,66px);color:var(--amarelo)}
+.ring-lbl{font-size:18px;color:var(--suave);margin-top:8px}
+.drawer-now{margin-top:26px;font-size:21px;line-height:1.5}
+.drawer-now b{display:inline-block;background:#fff;color:var(--roxo);padding:1px 12px;border-radius:10px;font-weight:600}
+.paused-note{
+  display:block;width:fit-content;margin:14px auto 0;background:var(--amarelo);color:var(--tinta);
+  border-radius:10px;padding:6px 14px;font-weight:600;font-size:16px
+}
+.paused-note:empty{display:none}
+.pos-pill{
+  display:block;width:fit-content;margin:22px auto 0;background:#fff;color:var(--tinta);
+  border-radius:14px;padding:14px 22px;font-size:22px;font-weight:600;box-shadow:0 6px 0 rgba(0,0,0,.18)
+}
+.wait-btns{display:flex;flex-direction:column;gap:12px;margin-top:30px}
+
+/* desenhando */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.turn-title{font-size:26px;font-weight:700;line-height:1.2;text-shadow:0 3px 0 var(--sombra)}
+.turn-title b{color:var(--amarelo);font-weight:700}
+.clock-pill{
+  background:#fff;color:var(--roxo);border-radius:14px;padding:4px 18px;min-width:124px;text-align:center;
+  font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;box-shadow:0 5px 0 rgba(0,0,0,.2)
+}
+.clock-pill.low{background:var(--vermelho);color:#fff}
+.clock-pill.paused{background:var(--amarelo);color:var(--tinta)}
+.track{height:12px;background:var(--escuro);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.track i{display:block;height:100%;width:0;background:var(--verde);border-radius:99px;transition:width .9s linear}
+.track i.low{background:var(--vermelho)}
+.track i.paused{background:var(--amarelo)}
+.brief{
+  background:#fff;color:var(--tinta);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;
+  font-size:18px;line-height:1.4;box-shadow:0 6px 0 rgba(0,0,0,.18)
+}
+.brief b{color:var(--roxo);font-weight:600}
+.sheet{background:#fff;border-radius:16px;padding:6px;box-shadow:0 8px 0 rgba(0,0,0,.2);line-height:0}
+.sheet canvas{width:100%;height:auto;display:block;border-radius:10px}
+#pad{touch-action:none;cursor:crosshair}
+#pad.fill{cursor:cell}
+
+.tools{display:flex;align-items:center;gap:14px 16px;flex-wrap:wrap}
+.toolset{display:flex;gap:6px;background:var(--lilas);padding:5px;border-radius:12px}
+.tool{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;font-weight:600;font-size:16px;color:var(--tinta)}
+.tool[aria-pressed="true"]{background:var(--roxo);color:#fff;box-shadow:0 3px 0 var(--roxo-3)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:36px;height:36px;border-radius:10px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.15)}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--tinta)}
+.sizes{display:flex;gap:8px;align-items:center}
+.sz{width:38px;height:38px;border-radius:10px;background:var(--lilas);display:grid;place-items:center}
+.sz[aria-pressed="true"]{background:var(--tinta)}
+.sz i{display:block;border-radius:50%;background:var(--tinta)}
+.sz[aria-pressed="true"] i{background:#fff}
+.history-btns{display:flex;gap:8px}
+.history-btns .btn{padding:11px 14px}
+.push{margin-left:auto}
+
+/* tela cheia: sua vez / pausa */
+.overlay{position:fixed;inset:0;z-index:50;background:var(--fundo);display:grid;place-items:center;padding:24px;text-align:center}
+.ov-box h2{color:#fff;font-size:clamp(40px,9vw,64px);font-weight:700;text-shadow:0 5px 0 var(--sombra);margin-bottom:12px;line-height:1.05}
+.ov-box p{color:var(--suave);font-size:19px;line-height:1.45;max-width:36ch;margin:0 auto}
+.ov-count{
+  width:min(56vw,220px);aspect-ratio:1;margin:28px auto 0;border-radius:50%;background:#fff;color:var(--roxo);
+  display:grid;place-items:center;font-size:clamp(80px,20vw,120px);font-weight:700;box-shadow:0 8px 0 var(--sombra)
+}
+.ov-count:empty{display:none}
+
+/* organizador */
+.adm-head{padding:10px 0 0}
+.linkbox{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.linkbox span{color:var(--cinza);font-size:15px}
+.linkbox code{font-family:inherit;font-weight:600;word-break:break-all;flex:1;min-width:180px;color:var(--roxo);font-size:17px}
+.adm-grid{display:grid;gap:22px;grid-template-columns:1fr;margin-top:22px}
+@media (min-width:960px){.adm-grid{grid-template-columns:minmax(0,1.55fr) minmax(330px,1fr);align-items:start}}
+.side{display:flex;flex-direction:column;gap:22px}
+.side>.card{margin-top:0}
+.row-left{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.sub-lbl{color:var(--cinza);font-size:15px;margin:18px 0 8px}
+.ctrl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  padding:9px 14px;border-radius:10px;background:var(--lilas);color:var(--tinta);
+  font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;box-shadow:0 3px 0 rgba(0,0,0,.14)
+}
+.chip:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.14)}
+.chip[aria-pressed="true"]{background:var(--roxo);color:#fff}
+.chip[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+.stepper{display:flex;align-items:stretch;gap:10px}
+.stepper .btn{min-width:84px}
+.step-view{
+  flex:1;display:grid;place-items:center;background:var(--lilas);border-radius:12px;
+  font-size:38px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--roxo)
+}
+.manual{display:flex;gap:8px;margin-top:12px}
+.manual input{flex:1;min-width:0}
+
+.queue{list-style:none;display:flex;flex-direction:column;gap:8px}
+.queue li{display:flex;align-items:center;gap:12px;padding:9px 12px;background:var(--lilas);border-radius:12px;font-size:17px}
+.queue .n{width:32px;height:32px;border-radius:9px;color:#fff;flex:none;display:grid;place-items:center;font-size:15px;font-weight:600}
+.queue li:nth-child(4n+1) .n{background:var(--vermelho)}
+.queue li:nth-child(4n+2) .n{background:var(--azul)}
+.queue li:nth-child(4n+3) .n{background:var(--amarelo);color:var(--tinta)}
+.queue li:nth-child(4n+4) .n{background:var(--verde)}
+.queue .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--verde);flex:none}
+.dot.off{background:#B7AECB}
+.x{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--tinta);font-size:19px;line-height:1;flex:none;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+
+.timeline{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tl{
+  background:var(--lilas);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px;
+  text-align:left;width:100%;color:var(--tinta);box-shadow:0 4px 0 rgba(0,0,0,.12)
+}
+.tl:hover{background:var(--lilas-2)}
+.tl.cur{box-shadow:inset 0 0 0 3px var(--roxo),0 4px 0 rgba(0,0,0,.12)}
+.tl canvas{width:100%;height:auto;display:block;border-radius:8px;background:#fff}
+.tl small{display:block;color:var(--cinza);font-size:13px;padding:0 4px}
+.tl b{display:block;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px 2px}
+
+/* visualizador */
+.viewer{position:fixed;inset:0;z-index:60;background:rgba(6,42,72,.88);display:grid;place-items:center;padding:16px;overflow:auto}
+.v-box{width:min(1000px,100%);background:#fff;color:var(--tinta);border-radius:20px;padding:18px;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.v-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.v-step{color:var(--cinza);font-size:15px}
+.v-head h2{margin:4px 0 0;font-size:clamp(22px,4vw,30px);line-height:1.2}
+.v-head h2 b{color:var(--roxo);font-weight:700}
+.v-box .sheet{background:var(--lilas);box-shadow:none}
+.v-box .sheet canvas{max-height:66vh;object-fit:contain}
+.v-foot{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;margin-top:16px}
+.x.big{width:46px;height:46px;font-size:26px;background:var(--lilas)}
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+     COLE AQUI A CONFIGURAÇÃO DO SEU FIREBASE
+     Console Firebase > engrenagem > Configurações do projeto >
+     "Seus apps" > app da Web > copie o objeto firebaseConfig.
+===================================================================== -->
+<script>
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBbpb1GURvSIeyz8uaI05psHrgMT-qdV14",
+  authDomain: "desenhoproblems.firebaseapp.com",
+  databaseURL: "https://desenhoproblems-default-rtdb.firebaseio.com",
+  projectId: "desenhoproblems",
+  storageBucket: "desenhoproblems.firebasestorage.app",
+  messagingSenderId: "423358426338",
+  appId: "1:423358426338:web:303978c712e50e64dbc2bb"  
+};
+</script>
+
+<div class="shapes" aria-hidden="true">
+  <i class="sh tri"></i><i class="sh dia"></i><i class="sh cir"></i><i class="sh sqr"></i>
+</div>
+
+<div id="overlay" class="overlay hidden">
+  <div class="ov-box">
+    <h2 id="ov-title" role="status"></h2>
+    <p id="ov-sub"></p>
+    <div id="ov-count" class="ov-count" aria-hidden="true"></div>
+  </div>
+</div>
+
+<div id="viewer" class="viewer hidden" role="dialog" aria-modal="true" aria-labelledby="v-title">
+  <div class="v-box">
+    <div class="v-head">
+      <div>
+        <div id="v-step" class="v-step"></div>
+        <h2 id="v-title"></h2>
+      </div>
+      <button id="v-close" class="x big" aria-label="Fechar">×</button>
+    </div>
+    <div class="sheet"><canvas id="v-canvas" width="960" height="640"></canvas></div>
+    <div class="v-foot">
+      <button id="v-prev" class="btn">Anterior</button>
+      <button id="v-png" class="btn green">Baixar esta imagem</button>
+      <button id="v-next" class="btn">Próxima</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ CONECTANDO ============ -->
+  <section id="screen-boot" class="screen on">
+    <div style="text-align:center;padding-top:32vh">
+      <div class="spinner"></div>
+      <p class="note light" style="font-size:18px;margin-top:18px">Conectando…</p>
+    </div>
+  </section>
+
+  <!-- ============ JOGADOR: ENTRADA ============ -->
+  <section id="screen-join" class="screen">
+    <div class="narrow">
+      <div id="join-hero" class="logo-block">
+        <div class="shape-row" aria-hidden="true"><i class="s tri"></i><i class="s dia"></i><i class="s cir"></i><i class="s sqr"></i></div>
+        <h1 class="logo">Passa o Desenho</h1>
+        <p class="tagline">Um desenho só, feito por todo mundo, uma pessoa de cada vez.</p>
+      </div>
+      <div id="join-done" class="logo-block hidden">
+        <div class="shape-row" aria-hidden="true"><i class="s tri"></i><i class="s dia"></i><i class="s cir"></i><i class="s sqr"></i></div>
+        <h1 class="logo">Sua vez acabou!</h1>
+        <p class="tagline">Valeu por desenhar! Se quiser desenhar de novo, é só entrar: você vai para o fim da fila, ou começa direto se não tiver ninguém esperando.</p>
+      </div>
+
+      <div class="card">
+        <input id="p-name" class="big-input" maxlength="16" placeholder="Seu nome" aria-label="Seu nome" autocomplete="off">
+        <div id="server-choose" class="hidden">
+          <h2>Em qual servidor?</h2>
+          <div id="server-list" class="srv-list"></div>
+        </div>
+        <button id="btn-enter" class="btn dark wide big" disabled>Esperando abrir um servidor</button>
+        <p id="join-status" class="note"></p>
+        <div id="join-msg" class="msg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOGADOR: FILA ============ -->
+  <section id="screen-wait" class="screen">
+    <div class="narrow wait">
+      <div id="w-head" class="pill-head"></div>
+      <div class="ring">
+        <div>
+          <div id="w-big" class="ring-num">–</div>
+          <div id="w-big-lbl" class="ring-lbl"></div>
+        </div>
+      </div>
+      <div id="w-drawer" class="drawer-now"></div>
+      <div id="w-paused" class="paused-note"></div>
+      <div id="w-pos" class="pos-pill"></div>
+      <div class="wait-btns">
+        <button id="btn-requeue" class="btn green big hidden">Entrar na fila</button>
+        <button id="btn-leave-queue" class="btn hidden">Sair da fila</button>
+        <button id="btn-exit" class="btn">Sair do servidor</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOGADOR: DESENHANDO ============ -->
+  <section id="screen-draw" class="screen">
+    <div class="bar">
+      <div class="turn-title">Sua vez!</div>
+      <div class="clock-pill" id="d-clock">5:00</div>
+    </div>
+    <div class="track"><i id="d-track"></i></div>
+    <div id="d-brief" class="brief"></div>
+    <div class="sheet"><canvas id="pad" width="960" height="640"></canvas></div>
+    <div class="card tools">
+      <div class="toolset" role="group" aria-label="Ferramenta">
+        <button id="tool-pen" class="tool" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+          Pincel
+        </button>
+        <button id="tool-fill" class="tool" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2a2 2 0 0 0 2.8 0z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4"/></svg>
+          Balde
+        </button>
+      </div>
+      <div class="swatches" id="swatches"></div>
+      <div class="sizes" id="sizes"></div>
+      <div class="history-btns">
+        <button id="btn-undo" class="btn" aria-label="Desfazer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+          Desfazer
+        </button>
+        <button id="btn-redo" class="btn" aria-label="Refazer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>
+          Refazer
+        </button>
+      </div>
+      <button id="btn-pass" class="btn dark push">Terminei, passar a vez</button>
+    </div>
+    <p class="note light">Seus traços são salvos sozinhos. Se a página recarregar, abra o site de novo neste mesmo aparelho que você volta para a sua vez. No computador, Ctrl+Z desfaz e Ctrl+Y refaz.</p>
+  </section>
+
+  <!-- ============ ORGANIZADOR: ABRIR SERVIDOR ============ -->
+  <section id="screen-adm-setup" class="screen">
+    <div class="narrow">
+      <div class="logo-block">
+        <div class="shape-row" aria-hidden="true"><i class="s tri"></i><i class="s dia"></i><i class="s cir"></i><i class="s sqr"></i></div>
+        <h1 class="logo">Abrir servidor</h1>
+        <p class="tagline">Assim que você abrir, o site libera para os jogadores. Só você vê o desenho por aqui.</p>
+      </div>
+      <div class="card left">
+        <label class="field">
+          <span>Seu nome (os jogadores veem "servidor de …")</span>
+          <input id="a-name" maxlength="20" placeholder="Ex.: Marina" autocomplete="off">
+        </label>
+        <div class="field">
+          <span>Tempo de cada vez</span>
+          <div class="stepper">
+            <button id="a-dur-minus" class="btn red" aria-label="Diminuir 30 segundos">−30s</button>
+            <div id="a-dur-view" class="step-view" aria-live="polite">5:00</div>
+            <button id="a-dur-plus" class="btn blue" aria-label="Aumentar 30 segundos">+30s</button>
+          </div>
+          <div class="manual">
+            <input id="a-dur-input" placeholder="Ou digite, ex.: 4:30" aria-label="Digitar o tempo de cada vez" autocomplete="off" inputmode="numeric">
+            <button id="a-dur-apply" class="btn">Usar</button>
+          </div>
+        </div>
+        <label class="field">
+          <span>Tema (opcional)</span>
+          <input id="a-theme" maxlength="60" placeholder="Ex.: uma cidade debaixo d'água" autocomplete="off">
+        </label>
+        <button id="btn-open" class="btn green wide big">Abrir servidor</button>
+        <div id="a-msg" class="msg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ORGANIZADOR: PAINEL ============ -->
+  <section id="screen-adm" class="screen">
+    <div class="adm-head">
+      <h1 id="a-title" class="logo small">Servidor aberto</h1>
+    </div>
+    <div class="card linkbox">
+      <span>Link para os jogadores</span>
+      <code id="a-link"></code>
+      <button id="btn-a-copy" class="btn blue">Copiar link</button>
+    </div>
+
+    <div class="adm-grid">
+      <div>
+        <div class="bar">
+          <div class="turn-title" id="a-now"></div>
+          <div class="clock-pill" id="a-clock">–</div>
+        </div>
+        <div class="track"><i id="a-track"></i></div>
+        <div class="sheet"><canvas id="adm-pad" width="960" height="640"></canvas></div>
+        <div class="row-left">
+          <button id="btn-a-png" class="btn">Baixar o desenho atual</button>
+        </div>
+
+        <div class="card">
+          <h2>Histórico do desenho</h2>
+          <p id="a-history-empty" class="note" style="margin:-6px 0 0">Cada vez que alguém desenha aparece aqui, com o nome de quem fez. Toque em uma para ver maior, baixar e passar para as outras.</p>
+          <div id="a-history" class="timeline"></div>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="card">
+          <h2>Vez atual</h2>
+          <p id="a-cur-empty" class="note" style="margin:-6px 0 14px">Ninguém desenhando agora. Estes botões ligam quando alguém começar. O tempo padrão logo abaixo dá para mudar quando quiser.</p>
+          <div class="ctrl-grid">
+            <button id="btn-a-minus" class="btn red">−30s</button>
+            <button id="btn-a-plus" class="btn blue">+30s</button>
+            <button id="btn-a-pause" class="btn yellow">Pausar</button>
+            <button id="btn-a-stop" class="btn dark">Encerrar a vez</button>
+          </div>
+          <div class="sub-lbl">Colocar o relógio em</div>
+          <div class="chips" id="a-chips"></div>
+          <div class="manual">
+            <input id="a-cur-input" placeholder="Ou digite, ex.: 2:30" aria-label="Digitar o tempo da vez atual" autocomplete="off" inputmode="numeric">
+            <button id="btn-a-cur-apply" class="btn">Usar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Tempo padrão de cada vez</h2>
+          <div class="stepper">
+            <button id="btn-def-minus" class="btn red" aria-label="Diminuir 30 segundos">−30s</button>
+            <div id="a-def-view" class="step-view" aria-live="polite">5:00</div>
+            <button id="btn-def-plus" class="btn blue" aria-label="Aumentar 30 segundos">+30s</button>
+          </div>
+          <div class="chips" id="a-def-chips" style="margin-top:12px"></div>
+          <div class="manual">
+            <input id="a-def-input" placeholder="Ou digite, ex.: 4:30" aria-label="Digitar o tempo padrão" autocomplete="off" inputmode="numeric">
+            <button id="btn-def-apply" class="btn">Usar</button>
+          </div>
+          <p class="note">Vale para cada pessoa que começar a vez daqui pra frente. Pode mudar a qualquer hora, mesmo sem ninguém no servidor.</p>
+          <label class="field" style="margin:16px 0 0">
+            <span>Tema</span>
+            <input id="a-theme-live" maxlength="60" placeholder="Tema livre" autocomplete="off">
+          </label>
+        </div>
+
+        <div class="card">
+          <h2 id="a-queue-count">Fila</h2>
+          <p id="a-queue-empty" class="note" style="margin-top:-6px">Ninguém na fila. Quem entrar no site aparece aqui por ordem de chegada.</p>
+          <ol id="a-queue" class="queue"></ol>
+        </div>
+
+        <div class="card">
+          <h2>Servidor</h2>
+          <div class="row-left" style="margin-top:0">
+            <button id="btn-a-clear" class="btn soft-red">Apagar o desenho e começar do zero</button>
+            <button id="btn-a-close" class="btn red">Encerrar o servidor</button>
+          </div>
+          <p class="note">O servidor continua aberto mesmo sem ninguém na fila. O desenho fica guardado e quem entrar depois continua de onde parou.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase, ref, set, get, update, remove, onValue, onDisconnect,
+  onChildAdded, onChildChanged, onChildRemoved, runTransaction, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ===================================================================
+   0. CONSTANTES
+=================================================================== */
+const W = 960, H = 640;
+const PAPER = "#FFFFFF";
+const PALETTE = ["#1B1035","#E21B3C","#FF7A00","#FFA602","#26890C",
+                 "#1368CE","#864CBF","#8B5E3C","#FFFFFF"];
+const SIZES = [3, 7, 16, 34];
+const FILL_TOL = 160;                   // quanto o balde tolera de diferença de cor
+const START_DELAY = 3000;               // contagem "É a sua vez! 3, 2, 1"
+const STALE_MS = 2 * 60 * 60 * 1000;    // esconde servidor com adm sumido há 2h
+const STEP = 30;                        // botões de −30s / +30s
+const MIN_DUR = 10, MAX_DUR = 3600;     // tempo padrão entre 10 segundos e 60 minutos
+const GONE_MS = 15000;                  // fechou a aba há mais de 15s: perde a vez / sai da fila
+const CHIP_MINUTES = [1, 2, 3, 4, 5];
+
+// Página do organizador: /adm ou index.html#adm
+const IS_ADMIN = /\/adm\/?$/i.test(location.pathname) || /^#adm/i.test(location.hash) ||
+                 new URLSearchParams(location.search).has("adm");
+
+/* ===================================================================
+   1. FIREBASE
+=================================================================== */
+let db;
+try {
+  if (String(window.FIREBASE_CONFIG.apiKey).includes("COLE_AQUI")) throw new Error("config-pendente");
+  db = getDatabase(initializeApp(window.FIREBASE_CONFIG));
+} catch (e) {
+  document.body.innerHTML =
+    '<div style="max-width:620px;margin:16vh auto;padding:0 24px;font-family:system-ui,sans-serif;color:#fff">' +
+    '<h1 style="font-size:32px;margin-bottom:16px">Falta conectar o Firebase</h1>' +
+    '<p style="line-height:1.6;color:#DDF6F8;font-size:17px">Abra o arquivo <code>index.html</code>, ' +
+    'procure o bloco <code>window.FIREBASE_CONFIG</code> no topo e troque os ' +
+    '<code>COLE_AQUI</code> pelos dados do seu projeto.</p></div>';
+  throw e;
+}
+
+/* ===================================================================
+   2. ESTADO
+   serverList/<sid>          -> { adminName, adminId, createdAt, adminOnline, lastSeen }
+   servers/<sid>/state       -> { open, adminName, adminId, duration, theme, epoch, seq,
+                                  turn:{id,uid,name,startsAt,endsAt,paused,pausedLeft},
+                                  queue:{<uid>:{name,t}} }
+   servers/<sid>/presence    -> { <uid>: {name, online} }
+   servers/<sid>/turns/t<id> -> { uid, name, e(epoch), s(traços e baldes em JSON) }
+   servers/<sid>/live        -> traço sendo feito agora (só o adm lê)
+=================================================================== */
+const S = {
+  offset: 0, uid: null, name: "", sid: null,
+  state: null, presence: {}, servers: {}, turns: {}, live: null,
+  unsubs: [], turnsUnsubs: [], connUnsub: null, pRef: null,
+  myTurnId: null, myEpoch: null, recovered: false,
+  mine: [], redo: [], tool: "pen", color: PALETTE[0], size: SIZES[1],
+};
+let drawing = false, cur = null, dirty = false, lastSaved = "", liveAt = 0;
+let wantJoin = false, lastAdvance = 0, historyDirty = false, adminRaf = 0, entering = false;
+let baseDirty = true, mineDirty = true;
+const parseCache = new Map();
+
+const now = () => Date.now() + S.offset;
+const $ = id => document.getElementById(id);
+const sRef = p => ref(db, `servers/${S.sid}/${p}`);
+const tkey = id => "t" + id;
+const newId = () => "u" + Math.random().toString(36).slice(2, 10);
+const cleanName = v => v.trim().replace(/\s+/g, " ");
+const clampDur = s => Math.max(MIN_DUR, Math.min(MAX_DUR, Math.round(s)));
+
+function setText(id, t) { const e = $(id); if (e.textContent !== t) e.textContent = t; }
+function setHTML(id, h) { const e = $(id); if (e._h !== h) { e._h = h; e.innerHTML = h; } }
+function fmt(ms) {
+  const s = Math.ceil(Math.max(0, ms) / 1000);
+  return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function slug(s) {
+  return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "alguem";
+}
+function show(screen) {
+  const el = $("screen-" + screen);
+  if (el.classList.contains("on")) return;
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
+  el.classList.add("on");
+  window.scrollTo(0, 0);
+  if (screen !== "draw") overlay(false);
+}
+function overlay(on, title, sub, count) {
+  $("overlay").classList.toggle("hidden", !on);
+  if (!on) return;
+  setText("ov-title", title); setText("ov-sub", sub); setText("ov-count", String(count));
+}
+
+/* ---- tempo digitado: "4:30", "5", "90s", "2min" ---- */
+function parseTime(v) {
+  v = String(v || "").trim().toLowerCase().replace(",", ".").replace(/\s+/g, "");
+  let m;
+  if ((m = v.match(/^(\d{1,3}):(\d{1,2})$/))) { const s = +m[2]; return s > 59 ? null : +m[1] * 60 + s; }
+  if ((m = v.match(/^(\d+(?:\.\d+)?)(s|seg|segundos?)$/))) return Math.round(+m[1]);
+  if ((m = v.match(/^(\d+(?:\.\d+)?)(m|min|minutos?)?$/))) return Math.round(+m[1] * 60);
+  return null;
+}
+function bindManual(inputId, btnId, fn) {
+  const go = () => {
+    const el = $(inputId);
+    if (el.disabled) return;
+    const s = parseTime(el.value);
+    if (s === null || s <= 0) {
+      el.classList.remove("bad"); void el.offsetWidth; el.classList.add("bad");
+      el.setAttribute("aria-invalid", "true");
+      setTimeout(() => { el.classList.remove("bad"); el.removeAttribute("aria-invalid"); }, 1600);
+      return;
+    }
+    el.value = "";
+    fn(s);
+  };
+  $(btnId).addEventListener("click", go);
+  $(inputId).addEventListener("keydown", e => { if (e.key === "Enter") go(); });
+}
+
+/* ---- tempo e fila ---- */
+function leftOf(t) {
+  if (!t) return 0;
+  if (t.paused) return Math.max(0, t.pausedLeft || 0);
+  return Math.max(0, t.endsAt - Math.max(now(), t.startsAt || 0));
+}
+function inCountdown(t) { return !!t && !t.paused && now() < (t.startsAt || 0); }
+const tv = x => typeof x === "number" ? x : Number.MAX_SAFE_INTEGER;
+function sortedQueue(st) {
+  return Object.entries((st && st.queue) || {})
+    .filter(([, q]) => q && q.name)
+    .sort((a, b) => (tv(a[1].t) - tv(b[1].t)) || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+}
+function isOffline(uid) { const p = S.presence && S.presence[uid]; return !!p && p.online === false; }
+// "Saiu de vez": desconectado há mais de GONE_MS (um recarregar de página rápido não conta)
+function isGone(uid) {
+  const p = S.presence && S.presence[uid];
+  if (!p || p.online !== false) return false;
+  return typeof p.off !== "number" || now() - p.off > GONE_MS;
+}
+const activeQueue = st => sortedQueue(st).filter(([u]) => !isGone(u));
+
+/* ===================================================================
+   3. DESENHO: traços, balde, camadas
+=================================================================== */
+function mkLayer(w = W, h = H) {
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  return [c, c.getContext("2d", { willReadFrequently: true })];
+}
+function blank(c) { c.fillStyle = PAPER; c.fillRect(0, 0, W, H); }
+
+function paintStroke(c, s) {
+  const p = s && s.p;
+  if (!p || p.length < 2) return;
+  c.lineCap = "round"; c.lineJoin = "round";
+  if (p.length < 6) {
+    c.beginPath(); c.arc(p[0], p[1], s.w / 2, 0, Math.PI * 2);
+    c.fillStyle = s.c; c.fill(); return;
+  }
+  c.strokeStyle = s.c; c.lineWidth = s.w;
+  c.beginPath(); c.moveTo(p[0], p[1]);
+  for (let i = 2; i < p.length - 2; i += 2) {
+    c.quadraticCurveTo(p[i], p[i + 1], (p[i] + p[i + 2]) / 2, (p[i + 1] + p[i + 3]) / 2);
+  }
+  c.lineTo(p[p.length - 2], p[p.length - 1]);
+  c.stroke();
+}
+
+function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+
+// Balde: pinta a área de cor parecida em volta do ponto tocado
+function floodFill(c, x, y, hex) {
+  x = Math.floor(x); y = Math.floor(y);
+  if (x < 0 || y < 0 || x >= W || y >= H) return;
+  const img = c.getImageData(0, 0, W, H), d = img.data;
+  const i0 = (y * W + x) * 4;
+  const r0 = d[i0], g0 = d[i0 + 1], b0 = d[i0 + 2];
+  const [r1, g1, b1] = hexRgb(hex);
+  if (Math.abs(r0 - r1) + Math.abs(g0 - g1) + Math.abs(b0 - b1) < 10) return;
+
+  const seen = new Uint8Array(W * H);
+  const ok = p => {
+    if (seen[p]) return false;
+    const k = p * 4;
+    return Math.abs(d[k] - r0) + Math.abs(d[k + 1] - g0) + Math.abs(d[k + 2] - b0) <= FILL_TOL;
+  };
+  const stack = [x, y];
+  while (stack.length) {
+    const py = stack.pop();
+    let px = stack.pop();
+    let p = py * W + px;
+    if (!ok(p)) continue;
+    while (px > 0 && ok(p - 1)) { px--; p--; }
+    let up = false, down = false;
+    while (px < W && ok(p)) {
+      seen[p] = 1;
+      const k = p * 4;
+      d[k] = r1; d[k + 1] = g1; d[k + 2] = b1; d[k + 3] = 255;
+      if (py > 0) { if (ok(p - W)) { if (!up) { stack.push(px, py - 1); up = true; } } else up = false; }
+      if (py < H - 1) { if (ok(p + W)) { if (!down) { stack.push(px, py + 1); down = true; } } else down = false; }
+      px++; p++;
+    }
+  }
+  c.putImageData(img, 0, 0);
+}
+
+function applyOp(c, o) {
+  if (!o) return;
+  if (o.t === "f") floodFill(c, o.x, o.y, o.c);
+  else paintStroke(c, o);
+}
+
+function turnList(epoch) {
+  return Object.entries(S.turns)
+    .filter(([, v]) => v && v.e === epoch)
+    .map(([k, v]) => ({ id: +k.slice(1), key: k, v }))
+    .sort((a, b) => a.id - b.id);
+}
+function opsOf(key) {
+  const v = S.turns[key];
+  if (!v || !v.s) return [];
+  const c = parseCache.get(key);
+  if (c && c.raw === v.s) return c.val;
+  let val = [];
+  try { val = JSON.parse(v.s); } catch (e) {}
+  parseCache.set(key, { raw: v.s, val });
+  return val;
+}
+
+function subscribeTurns() {
+  if (S.turnsUnsubs.length) return;
+  const r = sRef("turns");
+  const put = snap => { S.turns[snap.key] = snap.val(); turnsChanged(snap.key); };
+  S.turnsUnsubs.push(
+    onChildAdded(r, put),
+    onChildChanged(r, put),
+    onChildRemoved(r, snap => { delete S.turns[snap.key]; parseCache.delete(snap.key); turnsChanged(snap.key); })
+  );
+}
+function unsubscribeTurns() {
+  S.turnsUnsubs.forEach(u => u()); S.turnsUnsubs = [];
+  S.turns = {}; parseCache.clear(); baseDirty = true; mineDirty = true;
+}
+function turnsChanged(key) {
+  if (IS_ADMIN) { scheduleAdminDraw(); historyDirty = true; return; }
+  if (S.myTurnId === null) return;
+  if (key === tkey(S.myTurnId)) {
+    if (S.recovered) return;              // é só o eco do que eu mesmo salvei
+    S.recovered = true;
+    const v = S.turns[key];
+    if (v && v.uid === S.uid && v.e === S.myEpoch && v.s && !S.mine.length) {
+      try { S.mine = JSON.parse(v.s); lastSaved = v.s; mineDirty = true; } catch (e) {}
+    }
+  } else {
+    baseDirty = true;
+  }
+  drawPad();
+}
+
+/* ---- passar a vez (qualquer aparelho pode; a transação garante que acontece uma vez só) ---- */
+function advanceTx(force) {
+  if (!S.sid) return;
+  if (!force && Date.now() - lastAdvance < 1500) return;
+  lastAdvance = Date.now();
+  const turnId = force ? force.turnId : undefined;
+
+  runTransaction(sRef("state"), st => {
+    if (!st) return st;
+    if (!st.open) return;
+    const n = now();
+    const curTurn = st.turn;
+    if (curTurn) {
+      if (turnId !== undefined) { if (curTurn.id !== turnId) return; }
+      else { if (curTurn.paused || n < curTurn.endsAt + 800) return; }
+    } else if (turnId !== undefined) {
+      return;
+    }
+
+    const q = sortedQueue(st);
+    let next = null;
+    for (const [uid, e] of q) {
+      delete st.queue[uid];
+      if (!isGone(uid)) { next = { uid, name: e.name }; break; }
+    }
+    if (!next) {
+      if (!curTurn && !q.length) return;
+      st.turn = null;
+      return st;
+    }
+    const id = st.seq || 0;
+    st.turn = {
+      id, uid: next.uid, name: next.name,
+      startsAt: n + START_DELAY,
+      endsAt: n + START_DELAY + (st.duration || 300) * 1000,
+      paused: false, pausedLeft: 0
+    };
+    st.seq = id + 1;
+    return st;
+  }, { applyLocally: false }).catch(() => {});
+}
+
+function graceMs(t) {
+  if (IS_ADMIN) return 800;
+  if (t.uid === S.uid) return 1000;
+  let h = 0; for (const ch of S.uid) h += ch.charCodeAt(0);
+  return 2500 + (h % 2000);
+}
+
+let lastDrop = 0, lastSweep = 0;
+function dropTurn(t) {
+  if (Date.now() - lastDrop < 2000 + (IS_ADMIN ? 0 : 1000)) return;
+  lastDrop = Date.now();
+  advanceTx({ turnId: t.id });
+}
+// tira da fila quem fechou a aba, para a fila e as previsões ficarem certas
+function sweepQueue(st) {
+  if (Date.now() - lastSweep < 4000) return;
+  lastSweep = Date.now();
+  sortedQueue(st).forEach(([uid]) => { if (isGone(uid)) remove(sRef(`state/queue/${uid}`)).catch(() => {}); });
+}
+
+function tick() {
+  const st = S.state;
+  if (!S.sid || !st || !st.open) { overlay(false); return; }
+  const t = st.turn;
+  if (t && t.uid !== S.uid && isGone(t.uid)) dropTurn(t);          // quem desenhava fechou a aba
+  else if (t) { if (!t.paused && now() > t.endsAt + graceMs(t)) advanceTx(); }
+  else if (activeQueue(st).length) advanceTx();
+  sweepQueue(st);
+
+  if (IS_ADMIN) adminTick(); else playerTick();
+}
+
+/* ===================================================================
+   4. JOGADOR
+=================================================================== */
+function playerBoot() {
+  S.uid = sessionStorage.getItem("pd_uid") || newId();
+  sessionStorage.setItem("pd_uid", S.uid);
+  $("p-name").value = sessionStorage.getItem("pd_sname") || localStorage.getItem("pd_name") || "";
+
+  onValue(ref(db, "serverList"), s => { S.servers = s.val() || {}; renderServerList(); });
+
+  const sid = sessionStorage.getItem("pd_sid");
+  const nm = sessionStorage.getItem("pd_sname");
+  if (sid && nm) {
+    get(ref(db, `servers/${sid}/state`)).then(s => {
+      const v = s.val();
+      if (v && v.open) { S.name = nm; enterServer(sid, false); }
+      else { sessionStorage.removeItem("pd_sid"); show("join"); }
+    }).catch(() => show("join"));
+  } else {
+    show("join");
+  }
+}
+
+function openServers() {
+  const t = now();
+  return Object.entries(S.servers || {})
+    .filter(([, v]) => v && v.adminName && (v.adminOnline || (v.lastSeen && t - v.lastSeen < STALE_MS)))
+    .sort((a, b) => tv(a[1].createdAt) - tv(b[1].createdAt));
+}
+
+function renderServerList() {
+  if (S.sid) return;
+  const list = openServers();
+  const btn = $("btn-enter");
+  if (!list.length) {
+    btn.disabled = true; btn.textContent = "Esperando abrir um servidor";
+    $("join-status").textContent = "Ainda não tem nenhum jogo aberto. Quando quem organiza abrir o servidor, o botão libera sozinho.";
+    $("server-choose").classList.add("hidden");
+    btn.classList.remove("hidden");
+    return;
+  }
+  btn.disabled = false;
+  const last = sessionStorage.getItem("pd_lastsid");
+  btn.textContent = list.some(([s]) => s === last) ? "Entrar de novo" : "Entrar";
+  $("join-status").textContent = list.length === 1
+    ? `Servidor de ${list[0][1].adminName} aberto.`
+    : `${list.length} servidores abertos.`;
+  if (wantJoin) chooseOrJoin();
+}
+
+function showDone(on) {
+  $("join-done").classList.toggle("hidden", !on);
+  $("join-hero").classList.toggle("hidden", on);
+}
+
+$("btn-enter").addEventListener("click", () => {
+  const name = cleanName($("p-name").value);
+  if (name.length < 2) { $("join-msg").textContent = "Escreva seu nome para entrar."; return; }
+  S.name = name;
+  localStorage.setItem("pd_name", name);
+  sessionStorage.setItem("pd_sname", name);
+  $("join-msg").textContent = "";
+  wantJoin = true;
+  chooseOrJoin();
+});
+$("p-name").addEventListener("keydown", e => { if (e.key === "Enter" && !$("btn-enter").disabled) $("btn-enter").click(); });
+
+function chooseOrJoin() {
+  const list = openServers();
+  if (!list.length) return;
+  const last = sessionStorage.getItem("pd_lastsid");
+  const again = list.find(([sid]) => sid === last);
+  if (again) { wantJoin = false; enterServer(again[0], true); return; }
+  if (list.length === 1) { wantJoin = false; enterServer(list[0][0], true); return; }
+
+  const box = $("server-list");
+  box.innerHTML = "";
+  list.forEach(([sid, v]) => {
+    const b = document.createElement("button");
+    b.className = "srv";
+    b.innerHTML = `<span>Servidor de</span><b>${escapeHtml(v.adminName)}</b>`;
+    b.onclick = () => { wantJoin = false; enterServer(sid, true); };
+    box.appendChild(b);
+  });
+  $("server-choose").classList.remove("hidden");
+  $("btn-enter").classList.add("hidden");
+}
+
+async function enterServer(sid, queueNow) {
+  if (S.sid || entering) return;
+  entering = true;
+  if (queueNow) {
+    try {
+      const [pSnap, stSnap] = await Promise.all([
+        get(ref(db, `servers/${sid}/presence`)), get(ref(db, `servers/${sid}/state`))
+      ]);
+      const st = stSnap.val();
+      if (!st || !st.open) { $("join-msg").textContent = "Esse servidor acabou de ser encerrado."; entering = false; return; }
+      const clash = Object.entries(pSnap.val() || {}).some(([u, p]) =>
+        u !== S.uid && p && p.online && p.name && p.name.toLowerCase() === S.name.toLowerCase());
+      if (clash) {
+        $("join-msg").textContent = "Já tem alguém com esse nome nesse servidor. Use um apelido ou sobrenome.";
+        entering = false; return;
+      }
+    } catch (e) {
+      $("join-msg").textContent = "Não consegui entrar. Confira sua internet e tente de novo.";
+      entering = false; return;
+    }
+  }
+
+  S.sid = sid;
+  sessionStorage.setItem("pd_sid", sid);
+  S.pRef = ref(db, `servers/${sid}/presence/${S.uid}`);
+  S.connUnsub = onValue(ref(db, ".info/connected"), s => {
+    if (s.val() && S.pRef) { onDisconnect(S.pRef).update({ online: false, off: serverTimestamp() }); set(S.pRef, { name: S.name, online: true }); }
+  });
+  S.unsubs.push(onValue(sRef("state"), s => { S.state = s.val(); onPlayerState(); }));
+  S.unsubs.push(onValue(sRef("presence"), s => { S.presence = s.val() || {}; }));
+
+  $("server-choose").classList.add("hidden");
+  $("btn-enter").classList.remove("hidden");
+  showDone(false);
+  entering = false;
+  show("wait");
+  if (queueNow) joinQueue();
+}
+
+async function joinQueue() {
+  if (!S.sid) return;
+  let st = S.state;
+  if (!st) { try { st = (await get(sRef("state"))).val(); } catch (e) { return; } }
+  if (!st || !st.open) return;
+  if ((st.turn && st.turn.uid === S.uid) || (st.queue && st.queue[S.uid])) return;
+  try {
+    await set(sRef(`state/queue/${S.uid}`), { name: S.name, t: serverTimestamp() });
+    lastAdvance = 0;
+    advanceTx();
+  } catch (e) {}
+}
+
+function onPlayerState() {
+  const st = S.state;
+  if (!st || !st.open) {
+    sessionStorage.removeItem("pd_lastsid");
+    leaveServer("O servidor foi encerrado por quem organiza.");
+    return;
+  }
+  const t = st.turn;
+  const myTurn = t && t.uid === S.uid ? t : null;
+
+  // minha vez acabou: saio sem ver mais nada
+  if (!myTurn && S.myTurnId !== null) {
+    endMyTurn();
+    sessionStorage.setItem("pd_lastsid", S.sid);
+    leaveServer("", true);
+    return;
+  }
+
+  if (myTurn && S.myTurnId !== myTurn.id) {
+    if (S.myTurnId !== null) endMyTurn();
+    beginMyTurn(myTurn);
+  }
+
+  if (S.myTurnId !== null && st.epoch !== S.myEpoch) {
+    S.myEpoch = st.epoch; S.mine = []; S.redo = []; lastSaved = ""; cur = null; drawing = false;
+    parseCache.clear(); baseDirty = true; mineDirty = true;
+  }
+
+  if (S.myTurnId !== null) { show("draw"); renderBrief(); drawPad(); updateToolButtons(); }
+  else { show("wait"); renderWait(); }
+}
+
+function beginMyTurn(t) {
+  S.myTurnId = t.id; S.myEpoch = S.state.epoch;
+  S.mine = []; S.redo = []; lastSaved = ""; dirty = false; S.recovered = false;
+  cur = null; drawing = false; baseDirty = true; mineDirty = true;
+  subscribeTurns();
+  drawPad();
+  try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+}
+
+function endMyTurn() {
+  flushStrokes(true);
+  endLive();
+  S.myTurnId = null; S.mine = []; S.redo = []; cur = null; drawing = false;
+  unsubscribeTurns();
+  document.title = "Passa o Desenho";
+}
+
+function renderBrief() {
+  const st = S.state;
+  if (!st || S.myTurnId === null) return;
+  const prev = turnList(S.myEpoch).filter(t => t.id < S.myTurnId && t.v.s && t.v.s !== "[]").length;
+  let h = prev === 0
+    ? (st.theme ? `Você começa o desenho. Tema: <b>${escapeHtml(st.theme)}</b>.` : `Você começa o desenho. <b>Tema livre!</b>`)
+    : `Continue o desenho: <b>${prev} pessoa${prev > 1 ? "s" : ""}</b> já ${prev > 1 ? "mexeram" : "mexeu"} nele.`;
+  const q = activeQueue(st).length;
+  h += q ? ` Tem <b>${q}</b> esperando depois de você.` : " Ninguém esperando depois de você por enquanto.";
+  setHTML("d-brief", h);
+}
+
+function playerTick() {
+  const st = S.state, t = st.turn;
+  if (S.myTurnId !== null && t && t.id === S.myTurnId) {
+    const prev = turnList(S.myEpoch).some(x => x.id < S.myTurnId);
+    if (inCountdown(t)) {
+      overlay(true, "É a sua vez!",
+        prev ? "Você vai continuar o desenho de quem veio antes." : "Você vai começar o desenho.",
+        Math.max(1, Math.ceil((t.startsAt - now()) / 1000)));
+    } else if (t.paused) {
+      overlay(true, "Tempo pausado", "Quem organiza pausou sua vez. Seus traços estão salvos.", "");
+    } else {
+      overlay(false);
+    }
+    const left = leftOf(t);
+    const low = left < 15000 && !t.paused;
+    setText("d-clock", fmt(left));
+    $("d-clock").classList.toggle("low", low);
+    $("d-clock").classList.toggle("paused", !!t.paused);
+    const tr = $("d-track");
+    tr.style.width = Math.min(100, left / ((st.duration || 300) * 1000) * 100) + "%";
+    tr.classList.toggle("low", low);
+    tr.classList.toggle("paused", !!t.paused);
+
+    if (drawing && !canDraw()) endStroke();
+    if (left === 0 && !t.paused) flushStrokes(true);
+    renderBrief();
+    updateToolButtons();
+    document.title = "Sua vez! · Passa o Desenho";
+  } else {
+    overlay(false);
+    renderWait();
+  }
+}
+
+// Tela da fila: o número grande é quanto falta para a SUA vez.
+// O único nome que aparece é o de quem está desenhando agora.
+function renderWait() {
+  const st = S.state;
+  if (!st) return;
+  setHTML("w-head", `Aguardando a sua vez no servidor de <b>${escapeHtml(st.adminName)}</b>`);
+  const t = st.turn;
+  const q = activeQueue(st);
+  const idx = q.findIndex(([u]) => u === S.uid);
+
+  if (t) {
+    const n = `<b>${escapeHtml(t.name)}</b>`;
+    setHTML("w-drawer", inCountdown(t) ? `${n} vai começar a desenhar` : `${n} está desenhando agora`);
+  } else {
+    setHTML("w-drawer", "Ninguém está desenhando agora");
+  }
+  setText("w-paused", t && t.paused ? "Tempo pausado pelo organizador" : "");
+
+  if (idx >= 0) {
+    let ms = t ? leftOf(t) + (inCountdown(t) ? t.startsAt - now() : 0) : 0;
+    ms += idx * ((st.duration || 300) * 1000 + START_DELAY);
+    const soon = ms < 1000;
+    setText("w-big", soon ? "Já já!" : fmt(ms));
+    $("w-big").classList.toggle("soon", soon);
+    setText("w-big-lbl", soon ? "sua vez vai começar" : "até a sua vez");
+    setText("w-pos", idx === 0 ? "Você é a próxima pessoa!" : `Você está em ${idx + 1}º na fila`);
+    $("btn-requeue").classList.add("hidden");
+    $("btn-leave-queue").classList.remove("hidden");
+  } else {
+    setText("w-big", "–");
+    $("w-big").classList.remove("soon");
+    setText("w-big-lbl", "você não está na fila");
+    setText("w-pos", "Entre na fila para desenhar");
+    $("btn-requeue").classList.remove("hidden");
+    $("btn-leave-queue").classList.add("hidden");
+  }
+}
+
+function leaveServer(msg, done) {
+  if (S.myTurnId !== null) flushStrokes(true);
+  S.unsubs.forEach(u => u()); S.unsubs = [];
+  unsubscribeTurns();
+  if (S.connUnsub) { S.connUnsub(); S.connUnsub = null; }
+  if (S.pRef) {
+    onDisconnect(S.pRef).cancel().catch(() => {});
+    if (S.state && S.state.open) update(S.pRef, { online: false }).catch(() => {});
+    S.pRef = null;
+  }
+  S.sid = null; S.state = null; S.myTurnId = null;
+  wantJoin = false;
+  sessionStorage.removeItem("pd_sid");
+  overlay(false);
+  $("server-choose").classList.add("hidden");
+  $("btn-enter").classList.remove("hidden");
+  $("join-msg").textContent = msg || "";
+  showDone(!!done);
+  show("join");
+  renderServerList();
+  document.title = "Passa o Desenho";
+}
+
+$("btn-requeue").addEventListener("click", joinQueue);
+$("btn-leave-queue").addEventListener("click", () => {
+  if (S.sid) remove(sRef(`state/queue/${S.uid}`)).catch(() => {});
+});
+$("btn-exit").addEventListener("click", () => {
+  if (!S.sid) return;
+  if (S.state && S.state.queue && S.state.queue[S.uid]) remove(sRef(`state/queue/${S.uid}`)).catch(() => {});
+  leaveServer("");
+});
+$("btn-pass").addEventListener("click", () => {
+  if (S.myTurnId === null) return;
+  if (!confirm("Terminar sua vez agora e passar o desenho para a próxima pessoa?")) return;
+  flushStrokes(true);
+  advanceTx({ turnId: S.myTurnId });
+});
+
+/* ---- tela de quem desenha ---- */
+const pad = $("pad"), ctx = pad.getContext("2d");
+const [baseCv, bctx] = mkLayer();   // o que as pessoas anteriores fizeram
+const [mineCv, mctx] = mkLayer();   // anterior + o que eu já fiz
+
+function rebuildBase() {
+  blank(bctx);
+  if (S.myTurnId !== null) {
+    for (const t of turnList(S.myEpoch)) if (t.id < S.myTurnId) for (const o of opsOf(t.key)) applyOp(bctx, o);
+  }
+  baseDirty = false; mineDirty = true;
+}
+function rebuildMine() {
+  mctx.drawImage(baseCv, 0, 0);
+  for (const o of S.mine) applyOp(mctx, o);
+  mineDirty = false;
+}
+function drawPad() {
+  if (baseDirty) rebuildBase();
+  if (mineDirty) rebuildMine();
+  ctx.drawImage(mineCv, 0, 0);
+  if (cur) paintStroke(ctx, cur);
+}
+function commitOp(op) {
+  S.mine.push(op);
+  S.redo = [];
+  if (!baseDirty && !mineDirty) applyOp(mctx, op);
+  dirty = true;
+  flushStrokes(false);
+  drawPad();
+  updateToolButtons();
+}
+
+function canDraw() {
+  const st = S.state, t = st && st.turn;
+  return !IS_ADMIN && S.myTurnId !== null && !!t && t.id === S.myTurnId && t.uid === S.uid &&
+         !t.paused && !inCountdown(t) && leftOf(t) > 0;
+}
+
+function pos(e) {
+  const r = pad.getBoundingClientRect();
+  return [Math.round((e.clientX - r.left) / r.width * W), Math.round((e.clientY - r.top) / r.height * H)];
+}
+
+pad.addEventListener("pointerdown", e => {
+  if (!canDraw()) return;
+  const [x, y] = pos(e);
+  if (S.tool === "fill") { commitOp({ t: "f", c: S.color, x, y }); return; }
+  pad.setPointerCapture(e.pointerId);
+  drawing = true;
+  cur = { c: S.color, w: S.size, p: [x, y] };
+  sendLive();
+  drawPad();
+});
+pad.addEventListener("pointermove", e => {
+  if (!drawing || !cur) return;
+  const [x, y] = pos(e);
+  const n = cur.p.length;
+  const dx = x - cur.p[n - 2], dy = y - cur.p[n - 1];
+  if (dx * dx + dy * dy < 9) return;
+  cur.p.push(x, y);
+  drawPad();
+  if (Date.now() - liveAt > 150) sendLive();
+});
+function endStroke() {
+  if (!drawing) return;
+  drawing = false;
+  const s = cur;
+  cur = null;
+  if (s && S.myTurnId !== null) commitOp(s);
+  endLive();
+  drawPad();
+}
+pad.addEventListener("pointerup", endStroke);
+pad.addEventListener("pointercancel", endStroke);
+pad.addEventListener("pointerleave", endStroke);
+
+function undo() {
+  if (!canDraw() || !S.mine.length) return;
+  S.redo.push(S.mine.pop());
+  mineDirty = true; dirty = true;
+  drawPad(); flushStrokes(false); updateToolButtons();
+}
+function redo() {
+  if (!canDraw() || !S.redo.length) return;
+  const op = S.redo.pop();
+  S.mine.push(op);
+  if (!baseDirty && !mineDirty) applyOp(mctx, op);
+  dirty = true;
+  drawPad(); flushStrokes(false); updateToolButtons();
+}
+$("btn-undo").addEventListener("click", undo);
+$("btn-redo").addEventListener("click", redo);
+
+function setTool(t) {
+  S.tool = t;
+  $("tool-pen").setAttribute("aria-pressed", t === "pen");
+  $("tool-fill").setAttribute("aria-pressed", t === "fill");
+  pad.classList.toggle("fill", t === "fill");
+}
+$("tool-pen").addEventListener("click", () => setTool("pen"));
+$("tool-fill").addEventListener("click", () => setTool("fill"));
+
+function updateToolButtons() {
+  const can = canDraw();
+  $("btn-undo").disabled = !can || !S.mine.length;
+  $("btn-redo").disabled = !can || !S.redo.length;
+}
+
+document.addEventListener("keydown", e => {
+  if (IS_ADMIN) { viewerKeys(e); return; }
+  if (S.myTurnId === null || !(e.ctrlKey || e.metaKey)) return;
+  const k = e.key.toLowerCase();
+  if (k === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
+  else if ((k === "z" && e.shiftKey) || k === "y") { e.preventDefault(); redo(); }
+});
+
+function sendLive() {
+  if (!cur || !S.sid) return;
+  liveAt = Date.now();
+  set(sRef("live"), { id: S.myTurnId, e: S.myEpoch, c: cur.c, w: cur.w, p: cur.p }).catch(() => {});
+}
+function endLive() { if (S.sid) set(sRef("live"), null).catch(() => {}); }
+
+function flushStrokes(force) {
+  if (IS_ADMIN || !S.sid || S.myTurnId === null) return;
+  if (!dirty && !force) return;
+  const payload = JSON.stringify(S.mine);
+  if (payload === lastSaved) { dirty = false; return; }
+  const path = `turns/${tkey(S.myTurnId)}`;
+  lastSaved = payload; dirty = false;
+  set(sRef(path), { uid: S.uid, name: S.name, e: S.myEpoch, s: payload }).catch(() => {
+    if (lastSaved === payload) { lastSaved = ""; dirty = true; }
+  });
+}
+window.addEventListener("beforeunload", () => flushStrokes(true));
+
+const swBox = $("swatches");
+PALETTE.forEach((c, i) => {
+  const b = document.createElement("button");
+  b.className = "sw"; b.style.background = c;
+  b.setAttribute("aria-pressed", i === 0); b.setAttribute("aria-label", "Cor " + (i + 1));
+  b.onclick = () => { S.color = c; [...swBox.children].forEach(x => x.setAttribute("aria-pressed", x === b)); };
+  swBox.appendChild(b);
+});
+const szBox = $("sizes");
+SIZES.forEach((s, i) => {
+  const b = document.createElement("button");
+  b.className = "sz"; b.setAttribute("aria-pressed", i === 1);
+  b.setAttribute("aria-label", "Espessura " + (i + 1));
+  const dot = document.createElement("i");
+  const d = Math.max(5, Math.min(22, s * 0.72));
+  dot.style.width = d + "px"; dot.style.height = d + "px";
+  b.appendChild(dot);
+  b.onclick = () => {
+    S.size = s; setTool("pen");
+    [...szBox.children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  };
+  szBox.appendChild(b);
+});
+
+/* ===================================================================
+   5. ORGANIZADOR
+=================================================================== */
+let setupDur = clampDur(+localStorage.getItem("pd_admin_dur") || 300);
+function renderSetupDur() { setText("a-dur-view", fmt(setupDur * 1000)); }
+
+function makeChips(boxId, onPick) {
+  const box = $(boxId);
+  CHIP_MINUTES.forEach(m => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = m + ":00"; b.dataset.sec = m * 60;
+    b.setAttribute("aria-label", `${m} minuto${m > 1 ? "s" : ""}`);
+    b.onclick = () => onPick(m * 60);
+    box.appendChild(b);
+  });
+}
+
+async function adminBoot() {
+  document.title = "Organizar · Passa o Desenho";
+  S.uid = localStorage.getItem("pd_admin_uid") || ("a" + newId().slice(1));
+  localStorage.setItem("pd_admin_uid", S.uid);
+  $("a-name").value = localStorage.getItem("pd_admin_name") || "";
+  renderSetupDur();
+
+  makeChips("a-chips", sec => turnTx(t => setLeftOn(t, sec * 1000)));
+  makeChips("a-def-chips", sec => setDefault(sec));
+
+  const sid = localStorage.getItem("pd_admin_sid");
+  if (sid) {
+    try {
+      const v = (await get(ref(db, `servers/${sid}/state`))).val();
+      if (v && v.open && v.adminId === S.uid) { openAdmin(sid); return; }
+    } catch (e) {}
+    localStorage.removeItem("pd_admin_sid");
+  }
+  show("adm-setup");
+}
+
+$("a-dur-minus").addEventListener("click", () => { setupDur = clampDur(setupDur - STEP); renderSetupDur(); });
+$("a-dur-plus").addEventListener("click", () => { setupDur = clampDur(setupDur + STEP); renderSetupDur(); });
+bindManual("a-dur-input", "a-dur-apply", s => { setupDur = clampDur(s); renderSetupDur(); });
+
+$("btn-open").addEventListener("click", async () => {
+  const name = cleanName($("a-name").value);
+  if (name.length < 2) { $("a-msg").textContent = "Escreva seu nome para abrir o servidor."; return; }
+  localStorage.setItem("pd_admin_name", name);
+  localStorage.setItem("pd_admin_dur", setupDur);
+  $("btn-open").disabled = true; $("a-msg").textContent = "";
+  const sid = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  try {
+    await set(ref(db, `servers/${sid}/state`), {
+      open: true, adminName: name, adminId: S.uid,
+      duration: setupDur, theme: $("a-theme").value.trim(), epoch: 1, seq: 0
+    });
+    await set(ref(db, `serverList/${sid}`), {
+      adminName: name, adminId: S.uid, createdAt: serverTimestamp(), adminOnline: true
+    });
+    localStorage.setItem("pd_admin_sid", sid);
+    openAdmin(sid);
+  } catch (e) {
+    $("a-msg").textContent = "Não consegui abrir o servidor. Confira a configuração do Firebase e as regras do banco.";
+    $("btn-open").disabled = false;
+  }
+});
+
+function playerLink() {
+  return location.href.split(/[?#]/)[0].replace(/adm\/?$/i, "");
+}
+
+function openAdmin(sid) {
+  S.sid = sid;
+  const lRef = ref(db, `serverList/${sid}`);
+  S.connUnsub = onValue(ref(db, ".info/connected"), s => {
+    if (s.val() && S.sid === sid) {
+      onDisconnect(lRef).update({ adminOnline: false, lastSeen: serverTimestamp() });
+      update(lRef, { adminOnline: true });
+    }
+  });
+  S.unsubs.push(onValue(sRef("state"), s => { S.state = s.val(); onAdminState(); }));
+  S.unsubs.push(onValue(sRef("presence"), s => { S.presence = s.val() || {}; renderAdminQueue(); }));
+  S.unsubs.push(onValue(sRef("live"), s => { S.live = s.val(); scheduleAdminDraw(); }));
+  subscribeTurns();
+  $("a-link").textContent = playerLink();
+  show("adm");
+}
+
+function onAdminState() {
+  const st = S.state;
+  if (!st || !st.open) { adminCleanup(); show("adm-setup"); return; }
+  setText("a-title", `Servidor de ${st.adminName}`);
+  const dur = st.duration || 300;
+  setText("a-def-view", fmt(dur * 1000));
+  [...$("a-def-chips").children].forEach(b => b.setAttribute("aria-pressed", +b.dataset.sec === dur));
+  const th = $("a-theme-live");
+  if (document.activeElement !== th) th.value = st.theme || "";
+  renderAdminQueue();
+  scheduleAdminDraw();
+  historyDirty = true;
+  adminTick();
+}
+
+function adminTick() {
+  const st = S.state;
+  if (!st) return;
+  const t = st.turn;
+  let h, clock = "–", pct = 0, low = false, paused = false;
+  if (!t) {
+    h = turnList(st.epoch).length
+      ? "Ninguém desenhando. O desenho está guardado."
+      : "Ninguém desenhando ainda. Mande o link!";
+  } else {
+    const n = `<b>${escapeHtml(t.name)}</b>`;
+    const off = isOffline(t.uid) ? " (desconectou)" : "";
+    if (inCountdown(t)) h = `${n}${off} começa em ${Math.max(1, Math.ceil((t.startsAt - now()) / 1000))}…`;
+    else if (t.paused) h = `${n}${off} está pausado`;
+    else h = `${n}${off} está desenhando`;
+    const l = leftOf(t);
+    clock = fmt(l);
+    pct = Math.min(100, l / ((st.duration || 300) * 1000) * 100);
+    paused = !!t.paused; low = l < 15000 && !paused;
+  }
+  setHTML("a-now", h);
+  setText("a-clock", clock);
+  $("a-clock").classList.toggle("low", low);
+  $("a-clock").classList.toggle("paused", paused);
+  const tr = $("a-track");
+  tr.style.width = pct + "%";
+  tr.classList.toggle("low", low);
+  tr.classList.toggle("paused", paused);
+
+  ["btn-a-minus", "btn-a-plus", "btn-a-pause", "btn-a-stop", "btn-a-cur-apply", "a-cur-input"]
+    .forEach(id => { $(id).disabled = !t; });
+  [...$("a-chips").children].forEach(b => { b.disabled = !t; });
+  $("a-cur-empty").classList.toggle("hidden", !!t);
+  setText("btn-a-pause", paused ? "Continuar" : "Pausar");
+}
+
+function renderAdminQueue() {
+  if (!IS_ADMIN || !S.state) return;
+  const q = sortedQueue(S.state);
+  setText("a-queue-count", q.length ? `Fila (${q.length})` : "Fila");
+  $("a-queue-empty").style.display = q.length ? "none" : "block";
+  const box = $("a-queue");
+  box.innerHTML = "";
+  q.forEach(([uid, e], i) => {
+    const li = document.createElement("li");
+    const n = document.createElement("span"); n.className = "n"; n.textContent = i + 1;
+    const dot = document.createElement("i"); dot.className = "dot" + (isOffline(uid) ? " off" : "");
+    const g = document.createElement("span"); g.className = "grow"; g.textContent = e.name;
+    const x = document.createElement("button");
+    x.className = "x"; x.textContent = "×";
+    x.setAttribute("aria-label", `Tirar ${e.name} da fila`);
+    x.onclick = () => { if (confirm(`Tirar ${e.name} da fila?`)) remove(sRef(`state/queue/${uid}`)); };
+    li.append(n, dot, g, x);
+    box.appendChild(li);
+  });
+}
+
+/* ---- desenho ao vivo do adm (com cache para o balde não pesar) ---- */
+const [prefCv, prefCtx] = mkLayer();
+const [lastCv, lastCtx] = mkLayer();
+const A = { prefSig: null, fullSig: null, lastKey: null, lastRaw: "", lastCount: 0 };
+const thumbs = new Map();
+
+const turnSig = t => t.key + ":" + (t.v.s ? t.v.s.length : 0);
+
+function saveThumb(key, src) {
+  let cv = thumbs.get(key);
+  if (!cv) { cv = document.createElement("canvas"); cv.width = 192; cv.height = 128; thumbs.set(key, cv); }
+  cv.getContext("2d").drawImage(src, 0, 0, 192, 128);
+}
+
+function scheduleAdminDraw() {
+  if (adminRaf) return;
+  adminRaf = requestAnimationFrame(() => { adminRaf = 0; adminRender(); });
+}
+
+function adminRender() {
+  const st = S.state;
+  if (!st) return;
+  const out = $("adm-pad").getContext("2d");
+  const list = turnList(st.epoch);
+
+  if (!list.length) {
+    blank(out);
+    A.prefSig = A.fullSig = A.lastKey = null; A.lastRaw = ""; A.lastCount = 0;
+    thumbs.clear();
+  } else {
+    const last = list[list.length - 1];
+    const before = list.slice(0, -1);
+    const pSig = st.epoch + "|" + before.map(turnSig).join(",");
+
+    if (pSig !== A.prefSig) {
+      if (A.fullSig && pSig === A.fullSig) {
+        prefCtx.drawImage(lastCv, 0, 0);
+      } else {
+        blank(prefCtx);
+        for (const t of before) { for (const o of opsOf(t.key)) applyOp(prefCtx, o); saveThumb(t.key, prefCv); }
+      }
+      A.prefSig = pSig; A.lastKey = null;
+    }
+
+    const raw = last.v.s || "[]";
+    const ops = opsOf(last.key);
+    const canAppend = A.lastKey === last.key && ops.length >= A.lastCount && raw.startsWith(A.lastRaw.slice(0, -1));
+    if (!canAppend) { lastCtx.drawImage(prefCv, 0, 0); A.lastCount = 0; }
+    for (let i = A.lastCount; i < ops.length; i++) applyOp(lastCtx, ops[i]);
+    A.lastCount = ops.length; A.lastKey = last.key; A.lastRaw = raw;
+    A.fullSig = st.epoch + "|" + list.map(turnSig).join(",");
+    saveThumb(last.key, lastCv);
+    out.drawImage(lastCv, 0, 0);
+  }
+
+  const lv = S.live;
+  if (lv && st.turn && lv.id === st.turn.id && lv.e === st.epoch) paintStroke(out, lv);
+  if (viewerIdx >= 0) renderViewer();
+}
+
+setInterval(() => { if (IS_ADMIN && historyDirty) { historyDirty = false; renderHistory(); } }, 1000);
+
+function renderHistory() {
+  const st = S.state;
+  if (!st) return;
+  const list = turnList(st.epoch);
+  $("a-history-empty").style.display = list.length ? "none" : "block";
+  const box = $("a-history");
+  box.innerHTML = "";
+  list.forEach((t, i) => {
+    const isCur = st.turn && tkey(st.turn.id) === t.key;
+    const b = document.createElement("button");
+    b.className = "tl" + (isCur ? " cur" : "");
+    b.setAttribute("aria-label", `Ver maior a vez ${i + 1}, de ${t.v.name || "alguém"}`);
+    const cv = document.createElement("canvas");
+    cv.width = 192; cv.height = 128;
+    const tc = cv.getContext("2d");
+    const th = thumbs.get(t.key);
+    if (th) tc.drawImage(th, 0, 0); else { tc.fillStyle = PAPER; tc.fillRect(0, 0, 192, 128); }
+    const sm = document.createElement("small");
+    sm.textContent = `Vez ${i + 1}` + (isCur ? " · agora" : "");
+    const nm = document.createElement("b");
+    nm.textContent = t.v.name || "alguém";
+    b.append(cv, sm, nm);
+    b.onclick = () => openViewer(i);
+    box.appendChild(b);
+  });
+}
+
+/* ---- visualizador grande ---- */
+let viewerIdx = -1, viewerSig = "";
+const [viewCv, viewCtx] = mkLayer();
+
+function openViewer(i) {
+  viewerIdx = i; viewerSig = "";
+  $("viewer").classList.remove("hidden");
+  renderViewer();
+  $("v-close").focus();
+}
+function closeViewer() {
+  viewerIdx = -1;
+  $("viewer").classList.add("hidden");
+}
+function renderViewer() {
+  const st = S.state;
+  if (viewerIdx < 0 || !st) return;
+  const list = turnList(st.epoch);
+  if (!list.length) { closeViewer(); return; }
+  viewerIdx = Math.min(viewerIdx, list.length - 1);
+  const i = viewerIdx, t = list[i], isLast = i === list.length - 1;
+
+  const sig = st.epoch + "|" + i + "|" + list.slice(0, i + 1).map(turnSig).join(",") + (isLast ? "|L" : "");
+  if (sig !== viewerSig) {
+    viewerSig = sig;
+    const out = $("v-canvas").getContext("2d");
+    if (isLast && A.lastKey === t.key) {
+      out.drawImage(lastCv, 0, 0);
+    } else {
+      blank(viewCtx);
+      for (let j = 0; j <= i; j++) for (const o of opsOf(list[j].key)) applyOp(viewCtx, o);
+      out.drawImage(viewCv, 0, 0);
+    }
+  }
+
+  const isCur = st.turn && tkey(st.turn.id) === t.key;
+  setText("v-step", `Vez ${i + 1} de ${list.length} · o desenho até aqui` + (isCur ? " · ainda desenhando" : ""));
+  setHTML("v-title", `Feita por <b>${escapeHtml(t.v.name || "alguém")}</b>`);
+  $("v-prev").disabled = i === 0;
+  $("v-next").disabled = isLast;
+}
+function viewerStep(d) {
+  if (viewerIdx < 0) return;
+  const n = turnList(S.state.epoch).length;
+  const i = Math.max(0, Math.min(n - 1, viewerIdx + d));
+  if (i !== viewerIdx) { viewerIdx = i; renderViewer(); }
+}
+function viewerKeys(e) {
+  if (viewerIdx < 0) return;
+  if (e.key === "Escape") closeViewer();
+  else if (e.key === "ArrowLeft") viewerStep(-1);
+  else if (e.key === "ArrowRight") viewerStep(1);
+}
+$("v-close").addEventListener("click", closeViewer);
+$("viewer").addEventListener("click", e => { if (e.target === $("viewer")) closeViewer(); });
+$("v-prev").addEventListener("click", () => viewerStep(-1));
+$("v-next").addEventListener("click", () => viewerStep(1));
+$("v-png").addEventListener("click", () => {
+  const st = S.state;
+  if (viewerIdx < 0 || !st) return;
+  const t = turnList(st.epoch)[viewerIdx];
+  const a = document.createElement("a");
+  a.download = `passa-o-desenho-vez-${viewerIdx + 1}-${slug(t && t.v.name)}.png`;
+  a.href = $("v-canvas").toDataURL("image/png");
+  a.click();
+});
+
+/* ---- tempo: vez atual ---- */
+function turnTx(fn) {
+  const id = S.state && S.state.turn ? S.state.turn.id : null;
+  if (id === null) return;
+  runTransaction(sRef("state/turn"), t => {
+    if (!t) return t;
+    if (t.id !== id) return;
+    fn(t);
+    return t;
+  }).catch(() => {});
+}
+function setLeftOn(t, ms) {
+  ms = Math.max(0, Math.round(ms));
+  if (t.paused) t.pausedLeft = ms;
+  else t.endsAt = Math.max(now(), t.startsAt || 0) + ms;
+}
+
+$("btn-a-plus").addEventListener("click", () => turnTx(t => setLeftOn(t, leftOf(t) + STEP * 1000)));
+$("btn-a-minus").addEventListener("click", () => turnTx(t => {
+  const l = leftOf(t);
+  setLeftOn(t, Math.max(Math.min(l, 5000), l - STEP * 1000));   // não zera sem querer
+}));
+bindManual("a-cur-input", "btn-a-cur-apply", s => turnTx(t => setLeftOn(t, s * 1000)));
+$("btn-a-pause").addEventListener("click", () => turnTx(t => {
+  if (t.paused) {
+    const n = now();
+    t.paused = false;
+    t.startsAt = Math.min(t.startsAt || 0, n);
+    t.endsAt = n + (t.pausedLeft || 0);
+    t.pausedLeft = 0;
+  } else {
+    t.pausedLeft = leftOf(t);
+    t.paused = true;
+  }
+}));
+$("btn-a-stop").addEventListener("click", () => {
+  const t = S.state && S.state.turn;
+  if (!t) return;
+  if (!confirm(`Encerrar a vez de ${t.name} agora?`)) return;
+  lastAdvance = 0;
+  advanceTx({ turnId: t.id });
+});
+
+/* ---- tempo: padrão (funciona com ou sem alguém desenhando) ---- */
+function setDefault(sec) {
+  if (!S.sid) return;
+  const v = clampDur(sec);
+  localStorage.setItem("pd_admin_dur", v);
+  update(sRef("state"), { duration: v });
+}
+$("btn-def-minus").addEventListener("click", () => setDefault(((S.state && S.state.duration) || 300) - STEP));
+$("btn-def-plus").addEventListener("click", () => setDefault(((S.state && S.state.duration) || 300) + STEP));
+bindManual("a-def-input", "btn-def-apply", setDefault);
+
+$("a-theme-live").addEventListener("change", () => {
+  if (S.sid) update(sRef("state"), { theme: $("a-theme-live").value.trim() });
+});
+
+/* ---- servidor ---- */
+$("btn-a-copy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(playerLink()); setText("btn-a-copy", "Link copiado!"); }
+  catch { setText("btn-a-copy", "Copie o link ao lado"); }
+  setTimeout(() => setText("btn-a-copy", "Copiar link"), 2500);
+});
+$("btn-a-png").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.download = "passa-o-desenho.png";
+  a.href = lastCv.toDataURL("image/png");
+  a.click();
+});
+
+$("btn-a-clear").addEventListener("click", async () => {
+  const st = S.state;
+  if (!st) return;
+  if (!confirm("Apagar o desenho inteiro e o histórico? Isso não tem volta. Se alguém estiver desenhando, a vez continua numa folha em branco.")) return;
+  closeViewer();
+  await update(sRef("state"), { epoch: (st.epoch || 1) + 1 });
+  remove(sRef("turns")).catch(() => {});
+  set(sRef("live"), null).catch(() => {});
+});
+
+$("btn-a-close").addEventListener("click", async () => {
+  if (!S.sid) return;
+  if (!confirm("Encerrar o servidor? Todo mundo sai, e o desenho e o histórico são apagados. Baixe o que quiser guardar antes.")) return;
+  const sid = S.sid;
+  try { await onDisconnect(ref(db, `serverList/${sid}`)).cancel(); } catch (e) {}
+  adminCleanup();
+  await remove(ref(db, `serverList/${sid}`)).catch(() => {});
+  await remove(ref(db, `servers/${sid}`)).catch(() => {});
+  show("adm-setup");
+});
+
+function adminCleanup() {
+  if (S.connUnsub) { S.connUnsub(); S.connUnsub = null; }
+  S.unsubs.forEach(u => u()); S.unsubs = [];
+  unsubscribeTurns();
+  closeViewer();
+  localStorage.removeItem("pd_admin_sid");
+  S.sid = null; S.state = null; S.live = null;
+  A.prefSig = A.fullSig = A.lastKey = null; A.lastRaw = ""; A.lastCount = 0;
+  thumbs.clear();
+  $("btn-open").disabled = false;
+  $("a-history").innerHTML = "";
+}
+
+/* ===================================================================
+   6. INÍCIO
+=================================================================== */
+onValue(ref(db, ".info/serverTimeOffset"), s => { S.offset = s.val() || 0; });
+document.querySelector(".wrap").classList.toggle("wide", IS_ADMIN);
+setInterval(tick, 250);
+if (IS_ADMIN) adminBoot(); else playerBoot();
+</script>
+</body>
+</html>
