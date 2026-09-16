@@ -272,6 +272,151 @@ input.bad{border-color:var(--vermelho);animation:shake .3s}
 .v-head h2 b{color:var(--roxo);font-weight:700}
 .v-box .sheet{background:var(--lilas);box-shadow:none}
 .v-box .sheet canvas{max-height:66vh;object-fit:contain}
+
+/* canvas infinito em tela cheia */
+html.locked,html.locked body{overflow:hidden;height:100%;overscroll-behavior:none}
+.stage{position:fixed;inset:0;background:#fff;z-index:2}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.stage canvas.fill{cursor:cell}
+.stage canvas.grab,.stage.view-only canvas{cursor:grab}
+.stage canvas.grabbing{cursor:grabbing}
+
+.fs-track{position:fixed;left:0;right:0;top:0;height:6px;margin:0;border-radius:0;background:rgba(27,16,53,.08);z-index:4}
+.fs-track i{border-radius:0}
+
+.hud-card{
+  background:#fff;color:var(--tinta);border-radius:16px;padding:10px 14px;
+  box-shadow:0 5px 0 rgba(27,16,53,.14),0 0 0 1px rgba(27,16,53,.08)
+}
+.hud-top{
+  position:fixed;left:0;right:0;top:0;z-index:3;pointer-events:none;
+  padding:calc(16px + env(safe-area-inset-top)) 12px 0;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:10px
+}
+.hud-top>*{pointer-events:auto}
+button.hud-card{font:inherit;text-align:left;cursor:pointer}
+.brief-card{max-width:min(560px,calc(100vw - 170px));font-size:15px;line-height:1.35}
+.brief-card .hud-title{display:block;font-size:20px;font-weight:700;color:var(--roxo)}
+.brief-card .brief-text b{color:var(--roxo);font-weight:600}
+.brief-hint{display:block;margin-top:5px;color:var(--cinza);font-size:13px}
+.brief-card.collapsed .brief-text,.brief-card.collapsed .brief-hint{display:none}
+
+.zoombar{display:flex;gap:6px;align-items:center}
+.zoombar.side{position:fixed;right:12px;top:50%;transform:translateY(-50%);flex-direction:column;z-index:3}
+.zb{
+  height:42px;min-width:42px;padding:0 10px;border-radius:12px;background:#fff;color:var(--tinta);
+  display:grid;place-items:center;font-weight:600;font-size:22px;line-height:1;
+  box-shadow:0 3px 0 rgba(27,16,53,.16),0 0 0 1px rgba(27,16,53,.1)
+}
+.zb svg{width:20px;height:20px}
+.zb:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(27,16,53,.16),0 0 0 1px rgba(27,16,53,.1)}
+.zb.txt{font-size:15px}
+.zb[aria-pressed="true"]{background:var(--roxo);color:#fff}
+.zlabel{
+  height:34px;min-width:52px;padding:0 6px;border-radius:10px;background:rgba(255,255,255,.95);color:var(--tinta);
+  font-size:14px;font-weight:600;display:grid;place-items:center;box-shadow:0 0 0 1px rgba(27,16,53,.1);font-variant-numeric:tabular-nums
+}
+
+.hud-bottom{
+  position:fixed;left:0;right:0;bottom:0;z-index:3;pointer-events:none;
+  padding:0 10px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center
+}
+.toolbar{
+  pointer-events:auto;background:#fff;color:var(--tinta);border-radius:18px;padding:10px 12px;max-width:100%;
+  box-shadow:0 6px 0 rgba(27,16,53,.14),0 0 0 1px rgba(27,16,53,.08);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 18px
+}
+.tb-row{display:flex;align-items:center;gap:10px 14px;min-width:0}
+.toolbar .history-btns .btn{padding:10px 12px}
+@media (max-width:760px){
+  .toolbar{flex-direction:column;align-items:stretch;width:100%;gap:8px;padding:8px}
+  .tb-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px}
+  .tb-row::-webkit-scrollbar{display:none}
+  .tb-row>*{flex:none}
+  .history-btns .lbl{display:none}
+  .zoombar.side{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));transform:none}
+}
+
+/* painel do adm por cima do desenho */
+#screen-adm{--rs:0px}
+@media (min-width:900px){#screen-adm.panel-open{--rs:376px}}
+.adm-left{
+  position:fixed;left:12px;top:calc(16px + env(safe-area-inset-top));z-index:3;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  max-width:calc(100vw - var(--rs) - 200px)
+}
+.adm-info .adm-title{font-size:20px;font-weight:700;color:var(--roxo);line-height:1.2}
+.adm-info .adm-now{font-size:16px;line-height:1.35;margin-top:2px}
+.adm-info .adm-now b{color:var(--roxo);font-weight:600}
+.zoombar.row{flex-wrap:wrap}
+.adm-right{position:fixed;right:12px;top:calc(16px + env(safe-area-inset-top));z-index:6;display:flex;gap:8px;align-items:center}
+.adm-right .btn{padding:11px 16px}
+.side-panel{
+  position:fixed;right:12px;top:calc(78px + env(safe-area-inset-top));bottom:12px;width:360px;z-index:5;
+  overflow-y:auto;overscroll-behavior:contain;color:var(--tinta);
+  background:rgba(241,235,250,.97);border-radius:20px;padding:0 12px 12px;
+  box-shadow:0 10px 30px rgba(27,16,53,.2),0 0 0 1px rgba(27,16,53,.08)
+}
+.side-panel .card{margin-top:12px;padding:16px;box-shadow:0 3px 0 rgba(27,16,53,.08)}
+.side-panel h2{font-size:19px;margin-bottom:12px}
+#screen-adm:not(.panel-open) .side-panel{display:none}
+@media (max-width:899px){
+  .side-panel{left:8px;right:8px;width:auto;bottom:calc(8px + env(safe-area-inset-bottom))}
+}
+.linkbox{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.dock{
+  position:fixed;left:12px;right:calc(12px + var(--rs));bottom:calc(12px + env(safe-area-inset-bottom));z-index:3;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:none
+}
+.dock>*{pointer-events:auto}
+.dock-body{
+  align-self:stretch;background:#fff;color:var(--tinta);border-radius:16px;padding:10px;
+  box-shadow:0 5px 0 rgba(27,16,53,.14),0 0 0 1px rgba(27,16,53,.08)
+}
+#screen-adm:not(.history-open) .dock-body{display:none}
+.strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.strip .tl{flex:none;width:150px}
+.dock-body .note{margin:2px 4px}
+@media (max-width:600px){.strip .tl{width:118px}}
+.lbl-short{display:none}
+@media (max-width:760px){
+  .clock-pill{font-size:26px;min-width:88px;padding:4px 12px}
+  .brief-card{font-size:14px;max-width:calc(100vw - 130px);padding:8px 12px}
+  .brief-card .hud-title{font-size:17px}
+  .tool{padding:7px}
+  .toolset{gap:4px;padding:4px}
+  .tb-row{gap:8px}
+  .toolbar .history-btns{gap:6px}
+  .toolbar .history-btns .btn{padding:9px}
+  #btn-pass{padding:10px 12px;font-size:15px}
+  .lbl-long{display:none}
+  .lbl-short{display:inline}
+  .adm-left{max-width:calc(100vw - 24px)}
+  .adm-info{padding:8px 12px;max-width:calc(100vw - 224px)}
+  .adm-info .adm-title{font-size:16px}
+  .adm-info .adm-now{font-size:14px}
+  .adm-right .btn{padding:9px 12px;font-size:15px}
+}
+
+/* cor livre, borracha e tamanho */
+.sw.on{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--tinta)}
+.sw.custom{
+  position:relative;display:grid;place-items:center;cursor:pointer;
+  background:conic-gradient(#E21B3C,#FFA602,#FFE500,#26890C,#12B6B5,#1368CE,#864CBF,#E21B3C)
+}
+.sw.custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.sw.custom .plus{
+  width:20px;height:20px;border-radius:50%;background:#fff;color:var(--tinta);
+  font-size:16px;font-weight:700;line-height:20px;text-align:center;pointer-events:none
+}
+.sw.custom.picked .plus{width:22px;height:22px;border-radius:6px;background:var(--pick);box-shadow:0 0 0 2px #fff;font-size:0}
+.sz.er i{background:#fff;box-shadow:inset 0 0 0 2px var(--tinta)}
+.sz.er[aria-pressed="true"] i{background:#fff;box-shadow:none}
+.sizebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sizebox.off{opacity:.4;pointer-events:none}
+.sizebox input[type=range]{width:130px;accent-color:var(--roxo)}
+.size-num{min-width:30px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--tinta)}
+@media (max-width:560px){.tool .lbl{display:none}.tool{padding:9px 11px}}
 .v-foot{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;margin-top:16px}
 .x.big{width:46px;height:46px;font-size:26px;background:var(--lilas)}
 </style>
@@ -291,7 +436,7 @@ window.FIREBASE_CONFIG = {
   projectId: "desenhoproblems",
   storageBucket: "desenhoproblems.firebasestorage.app",
   messagingSenderId: "423358426338",
-  appId: "1:423358426338:web:303978c712e50e64dbc2bb"  
+  appId: "1:423358426338:web:303978c712e50e64dbc2bb"
 };
 </script>
 
@@ -316,7 +461,7 @@ window.FIREBASE_CONFIG = {
       </div>
       <button id="v-close" class="x big" aria-label="Fechar">×</button>
     </div>
-    <div class="sheet"><canvas id="v-canvas" width="960" height="640"></canvas></div>
+    <div class="sheet"><canvas id="v-canvas" width="1200" height="800"></canvas></div>
     <div class="v-foot">
       <button id="v-prev" class="btn">Anterior</button>
       <button id="v-png" class="btn green">Baixar esta imagem</button>
@@ -385,39 +530,68 @@ window.FIREBASE_CONFIG = {
 
   <!-- ============ JOGADOR: DESENHANDO ============ -->
   <section id="screen-draw" class="screen">
-    <div class="bar">
-      <div class="turn-title">Sua vez!</div>
+    <div class="stage"><canvas id="pad"></canvas></div>
+    <div class="track fs-track"><i id="d-track"></i></div>
+
+    <div class="hud-top" id="d-top">
+      <button type="button" class="hud-card brief-card" id="d-top-card" aria-label="Mostrar ou esconder as instruções">
+        <span class="hud-title">Sua vez!</span>
+        <span id="d-brief" class="brief-text"></span>
+        <small id="d-hint" class="brief-hint hidden">Dica: dois dedos (ou a rodinha do mouse) movem a tela e dão zoom.</small>
+      </button>
       <div class="clock-pill" id="d-clock">5:00</div>
     </div>
-    <div class="track"><i id="d-track"></i></div>
-    <div id="d-brief" class="brief"></div>
-    <div class="sheet"><canvas id="pad" width="960" height="640"></canvas></div>
-    <div class="card tools">
-      <div class="toolset" role="group" aria-label="Ferramenta">
-        <button id="tool-pen" class="tool" aria-pressed="true">
+
+    <div class="zoombar side" id="d-zoom">
+      <button class="zb" id="pad-zoom-in" aria-label="Aproximar">+</button>
+      <span class="zlabel" id="pad-zoom">100%</span>
+      <button class="zb" id="pad-zoom-out" aria-label="Afastar">−</button>
+      <button class="zb" id="pad-fit" aria-label="Ver o desenho todo" title="Ver tudo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg></button>
+    </div>
+
+    <div class="hud-bottom">
+      <div class="toolbar" id="d-toolbar">
+        <div class="tb-row">
+          <div class="toolset" role="group" aria-label="Ferramenta">
+        <button id="tool-pen" class="tool" aria-pressed="true" aria-label="Pincel">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
-          Pincel
+          <span class="lbl">Pincel</span>
         </button>
-        <button id="tool-fill" class="tool" aria-pressed="false">
+        <button id="tool-eraser" class="tool" aria-pressed="false" aria-label="Borracha">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+          <span class="lbl">Borracha</span>
+        </button>
+        <button id="tool-fill" class="tool" aria-pressed="false" aria-label="Balde">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2a2 2 0 0 0 2.8 0z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4"/></svg>
-          Balde
+          <span class="lbl">Balde</span>
+        </button>
+        <button id="tool-move" class="tool" aria-pressed="false" aria-label="Mover a tela">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-6-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+          <span class="lbl">Mover</span>
         </button>
       </div>
-      <div class="swatches" id="swatches"></div>
-      <div class="sizes" id="sizes"></div>
-      <div class="history-btns">
+          <div class="history-btns">
         <button id="btn-undo" class="btn" aria-label="Desfazer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
-          Desfazer
+          <span class="lbl">Desfazer</span>
         </button>
         <button id="btn-redo" class="btn" aria-label="Refazer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>
-          Refazer
+          <span class="lbl">Refazer</span>
         </button>
       </div>
-      <button id="btn-pass" class="btn dark push">Terminei, passar a vez</button>
+          <button id="btn-pass" class="btn dark"><span class="lbl-long">Passar a vez</span><span class="lbl-short">Passar</span></button>
+        </div>
+        <div class="tb-row">
+          <div class="swatches" id="swatches"></div>
+          <div class="sizebox" id="size-box">
+            <div class="sizes" id="sizes"></div>
+            <input type="range" id="size-range" min="1" max="80" value="7" aria-label="Tamanho do pincel">
+            <span class="size-num" id="size-num">7</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <p class="note light">Seus traços são salvos sozinhos. Se a página recarregar, abra o site de novo neste mesmo aparelho que você volta para a sua vez. No computador, Ctrl+Z desfaz e Ctrl+Y refaz.</p>
   </section>
 
   <!-- ============ ORGANIZADOR: ABRIR SERVIDOR ============ -->
@@ -457,85 +631,95 @@ window.FIREBASE_CONFIG = {
 
   <!-- ============ ORGANIZADOR: PAINEL ============ -->
   <section id="screen-adm" class="screen">
-    <div class="adm-head">
-      <h1 id="a-title" class="logo small">Servidor aberto</h1>
-    </div>
-    <div class="card linkbox">
-      <span>Link para os jogadores</span>
-      <code id="a-link"></code>
-      <button id="btn-a-copy" class="btn blue">Copiar link</button>
+    <div class="stage view-only"><canvas id="adm-pad"></canvas></div>
+    <div class="track fs-track"><i id="a-track"></i></div>
+
+    <div class="adm-left" id="adm-left">
+      <div class="hud-card adm-info">
+        <div class="adm-title" id="a-title">Servidor aberto</div>
+        <div class="adm-now" id="a-now"></div>
+      </div>
+      <div class="zoombar row">
+        <button class="zb txt" id="btn-follow" aria-pressed="true" title="Mostra a mesma parte que está na tela de quem desenha">Acompanhando</button>
+        <button class="zb" id="adm-zoom-out" aria-label="Afastar">−</button>
+        <span class="zlabel" id="adm-zoom">100%</span>
+        <button class="zb" id="adm-zoom-in" aria-label="Aproximar">+</button>
+        <button class="zb" id="adm-fit" aria-label="Ver o desenho todo" title="Ver tudo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg></button>
+      </div>
     </div>
 
-    <div class="adm-grid">
-      <div>
-        <div class="bar">
-          <div class="turn-title" id="a-now"></div>
-          <div class="clock-pill" id="a-clock">–</div>
-        </div>
-        <div class="track"><i id="a-track"></i></div>
-        <div class="sheet"><canvas id="adm-pad" width="960" height="640"></canvas></div>
-        <div class="row-left">
-          <button id="btn-a-png" class="btn">Baixar o desenho atual</button>
-        </div>
+    <div class="adm-right">
+      <div class="clock-pill" id="a-clock">–</div>
+      <button id="btn-panel" class="btn dark" aria-controls="adm-panel" aria-expanded="true">Fechar painel</button>
+    </div>
 
-        <div class="card">
-          <h2>Histórico do desenho</h2>
-          <p id="a-history-empty" class="note" style="margin:-6px 0 0">Cada vez que alguém desenha aparece aqui, com o nome de quem fez. Toque em uma para ver maior, baixar e passar para as outras.</p>
-          <div id="a-history" class="timeline"></div>
+    <aside id="adm-panel" class="side-panel" aria-label="Painel do organizador">
+      <div class="card">
+        <h2>Link para os jogadores</h2>
+        <div class="linkbox">
+          <code id="a-link" style="font-family:inherit;font-weight:600;color:var(--roxo);word-break:break-all;flex:1;min-width:0"></code>
+          <button id="btn-a-copy" class="btn blue">Copiar link</button>
         </div>
       </div>
 
-      <div class="side">
-        <div class="card">
-          <h2>Vez atual</h2>
-          <p id="a-cur-empty" class="note" style="margin:-6px 0 14px">Ninguém desenhando agora. Estes botões ligam quando alguém começar. O tempo padrão logo abaixo dá para mudar quando quiser.</p>
-          <div class="ctrl-grid">
-            <button id="btn-a-minus" class="btn red">−30s</button>
-            <button id="btn-a-plus" class="btn blue">+30s</button>
-            <button id="btn-a-pause" class="btn yellow">Pausar</button>
-            <button id="btn-a-stop" class="btn dark">Encerrar a vez</button>
-          </div>
-          <div class="sub-lbl">Colocar o relógio em</div>
-          <div class="chips" id="a-chips"></div>
-          <div class="manual">
-            <input id="a-cur-input" placeholder="Ou digite, ex.: 2:30" aria-label="Digitar o tempo da vez atual" autocomplete="off" inputmode="numeric">
-            <button id="btn-a-cur-apply" class="btn">Usar</button>
-          </div>
+      <div class="card">
+        <h2>Vez atual</h2>
+        <p id="a-cur-empty" class="note" style="margin:-6px 0 14px">Ninguém desenhando agora. Estes botões ligam quando alguém começar. O tempo padrão logo abaixo dá para mudar quando quiser.</p>
+        <div class="ctrl-grid">
+          <button id="btn-a-minus" class="btn red">−30s</button>
+          <button id="btn-a-plus" class="btn blue">+30s</button>
+          <button id="btn-a-pause" class="btn yellow">Pausar</button>
+          <button id="btn-a-stop" class="btn dark">Encerrar a vez</button>
         </div>
+        <div class="sub-lbl">Colocar o relógio em</div>
+        <div class="chips" id="a-chips"></div>
+        <div class="manual">
+          <input id="a-cur-input" placeholder="Ou digite, ex.: 2:30" aria-label="Digitar o tempo da vez atual" autocomplete="off" inputmode="numeric">
+          <button id="btn-a-cur-apply" class="btn">Usar</button>
+        </div>
+      </div>
 
-        <div class="card">
-          <h2>Tempo padrão de cada vez</h2>
-          <div class="stepper">
-            <button id="btn-def-minus" class="btn red" aria-label="Diminuir 30 segundos">−30s</button>
-            <div id="a-def-view" class="step-view" aria-live="polite">5:00</div>
-            <button id="btn-def-plus" class="btn blue" aria-label="Aumentar 30 segundos">+30s</button>
-          </div>
-          <div class="chips" id="a-def-chips" style="margin-top:12px"></div>
-          <div class="manual">
-            <input id="a-def-input" placeholder="Ou digite, ex.: 4:30" aria-label="Digitar o tempo padrão" autocomplete="off" inputmode="numeric">
-            <button id="btn-def-apply" class="btn">Usar</button>
-          </div>
-          <p class="note">Vale para cada pessoa que começar a vez daqui pra frente. Pode mudar a qualquer hora, mesmo sem ninguém no servidor.</p>
-          <label class="field" style="margin:16px 0 0">
-            <span>Tema</span>
-            <input id="a-theme-live" maxlength="60" placeholder="Tema livre" autocomplete="off">
-          </label>
+      <div class="card">
+        <h2>Tempo padrão de cada vez</h2>
+        <div class="stepper">
+          <button id="btn-def-minus" class="btn red" aria-label="Diminuir 30 segundos">−30s</button>
+          <div id="a-def-view" class="step-view" aria-live="polite">5:00</div>
+          <button id="btn-def-plus" class="btn blue" aria-label="Aumentar 30 segundos">+30s</button>
         </div>
+        <div class="chips" id="a-def-chips" style="margin-top:12px"></div>
+        <div class="manual">
+          <input id="a-def-input" placeholder="Ou digite, ex.: 4:30" aria-label="Digitar o tempo padrão" autocomplete="off" inputmode="numeric">
+          <button id="btn-def-apply" class="btn">Usar</button>
+        </div>
+        <p class="note">Vale para cada pessoa que começar a vez daqui pra frente. Pode mudar a qualquer hora, mesmo sem ninguém no servidor.</p>
+        <label class="field" style="margin:16px 0 0">
+          <span>Tema</span>
+          <input id="a-theme-live" maxlength="60" placeholder="Tema livre" autocomplete="off">
+        </label>
+      </div>
 
-        <div class="card">
-          <h2 id="a-queue-count">Fila</h2>
-          <p id="a-queue-empty" class="note" style="margin-top:-6px">Ninguém na fila. Quem entrar no site aparece aqui por ordem de chegada.</p>
-          <ol id="a-queue" class="queue"></ol>
-        </div>
+      <div class="card">
+        <h2 id="a-queue-count">Fila</h2>
+        <p id="a-queue-empty" class="note" style="margin-top:-6px">Ninguém na fila. Quem entrar no site aparece aqui por ordem de chegada.</p>
+        <ol id="a-queue" class="queue"></ol>
+      </div>
 
-        <div class="card">
-          <h2>Servidor</h2>
-          <div class="row-left" style="margin-top:0">
-            <button id="btn-a-clear" class="btn soft-red">Apagar o desenho e começar do zero</button>
-            <button id="btn-a-close" class="btn red">Encerrar o servidor</button>
-          </div>
-          <p class="note">O servidor continua aberto mesmo sem ninguém na fila. O desenho fica guardado e quem entrar depois continua de onde parou.</p>
+      <div class="card">
+        <h2>Servidor</h2>
+        <div class="row-left" style="margin-top:0">
+          <button id="btn-a-png" class="btn">Baixar o desenho</button>
+          <button id="btn-a-clear" class="btn soft-red">Apagar e começar do zero</button>
+          <button id="btn-a-close" class="btn red">Encerrar o servidor</button>
         </div>
+        <p class="note">Arraste o desenho para olhar outras partes, e use a rodinha ou dois dedos para o zoom. O servidor continua aberto mesmo sem ninguém na fila.</p>
+      </div>
+    </aside>
+
+    <div class="dock" id="adm-dock">
+      <button id="btn-history" class="btn dark" aria-controls="history-body" aria-expanded="true">Esconder histórico</button>
+      <div class="dock-body" id="history-body">
+        <p id="a-history-empty" class="note">Cada vez que alguém desenha aparece aqui, com o nome de quem fez. Toque em uma para ver maior, baixar e passar para as outras.</p>
+        <div id="a-history" class="strip"></div>
       </div>
     </div>
   </section>
@@ -556,7 +740,11 @@ const W = 960, H = 640;
 const PAPER = "#FFFFFF";
 const PALETTE = ["#1B1035","#E21B3C","#FF7A00","#FFA602","#26890C",
                  "#1368CE","#864CBF","#8B5E3C","#FFFFFF"];
-const SIZES = [3, 7, 16, 34];
+const PRESETS = { pen: [3, 7, 16, 34], eraser: [12, 30, 60, 110] };
+const SIZE_RANGE = { pen: [1, 80], eraser: [4, 200] };
+const DEF_R = [0, 0, 960, 640];          // "folha" inicial: x, y, largura, altura
+const ZMIN = 0.05, ZMAX = 12;            // limites de zoom
+const PATCH_MAX_PX = 40e6;               // memória máxima para as áreas pintadas com balde
 const FILL_TOL = 160;                   // quanto o balde tolera de diferença de cor
 const START_DELAY = 3000;               // contagem "É a sua vez! 3, 2, 1"
 const STALE_MS = 2 * 60 * 60 * 1000;    // esconde servidor com adm sumido há 2h
@@ -601,11 +789,11 @@ const S = {
   state: null, presence: {}, servers: {}, turns: {}, live: null,
   unsubs: [], turnsUnsubs: [], connUnsub: null, pRef: null,
   myTurnId: null, myEpoch: null, recovered: false,
-  mine: [], redo: [], tool: "pen", color: PALETTE[0], size: SIZES[1],
+  mine: [], redo: [], tool: "pen", color: PALETTE[0], sizes: { pen: 7, eraser: 30 }, viewTouched: false,
 };
 let drawing = false, cur = null, dirty = false, lastSaved = "", liveAt = 0;
 let wantJoin = false, lastAdvance = 0, historyDirty = false, adminRaf = 0, entering = false;
-let baseDirty = true, mineDirty = true;
+let pendingFill = null;
 const parseCache = new Map();
 
 const now = () => Date.now() + S.offset;
@@ -636,6 +824,7 @@ function show(screen) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
   el.classList.add("on");
   window.scrollTo(0, 0);
+  document.documentElement.classList.toggle("locked", screen === "draw" || screen === "adm");
   if (screen !== "draw") overlay(false);
 }
 function overlay(on, title, sub, count) {
@@ -694,20 +883,18 @@ function isGone(uid) {
 const activeQueue = st => sortedQueue(st).filter(([u]) => !isGone(u));
 
 /* ===================================================================
-   3. DESENHO: traços, balde, camadas
+   3. DESENHO: canvas infinito, traços, borracha e balde
+   Tudo fica em coordenadas do "mundo", sem limite de tamanho.
+   O balde guarda a área que estava na tela quando foi usado (r) e a
+   resolução (s), para dar o mesmo resultado em qualquer aparelho.
 =================================================================== */
-function mkLayer(w = W, h = H) {
-  const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  return [c, c.getContext("2d", { willReadFrequently: true })];
-}
-function blank(c) { c.fillStyle = PAPER; c.fillRect(0, 0, W, H); }
+const r1 = v => Math.round(v * 10) / 10;
 
 function paintStroke(c, s) {
   const p = s && s.p;
   if (!p || p.length < 2) return;
   c.lineCap = "round"; c.lineJoin = "round";
-  if (p.length < 6) {
+  if (p.length < 4) {                       // um toque só: bolinha
     c.beginPath(); c.arc(p[0], p[1], s.w / 2, 0, Math.PI * 2);
     c.fillStyle = s.c; c.fill(); return;
   }
@@ -720,48 +907,399 @@ function paintStroke(c, s) {
   c.stroke();
 }
 
-function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+function hexRgb(h) { const n = parseInt(String(h).slice(1), 16) || 0; return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
 
-// Balde: pinta a área de cor parecida em volta do ponto tocado
-function floodFill(c, x, y, hex) {
-  x = Math.floor(x); y = Math.floor(y);
-  if (x < 0 || y < 0 || x >= W || y >= H) return;
-  const img = c.getImageData(0, 0, W, H), d = img.data;
-  const i0 = (y * W + x) * 4;
+function hashStr(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+const opHashes = new WeakMap();
+function opHash(op) {
+  let h = opHashes.get(op);
+  if (h === undefined) { h = hashStr(JSON.stringify(op)); opHashes.set(op, h); }
+  return h;
+}
+
+// Junta as operações de várias vezes numa lista só, em ordem.
+// Cada balde ganha uma chave que depende de tudo que veio antes dele.
+function buildSeq(lists, epoch) {
+  const seq = [];
+  let h = hashStr("e" + epoch);
+  for (const ops of lists) for (const op of ops) {
+    if (!op) continue;
+    const oh = opHash(op);
+    seq.push({ op, pk: op.t === "f" ? h + "_" + oh : null });
+    h = (Math.imul(h ^ oh, 16777619) + 2654435769) >>> 0;
+  }
+  seq.sig = h;
+  return seq;
+}
+
+const opBounds = new WeakMap();
+function boundsOf(it, forFit) {
+  const op = it.op;
+  if (op.t === "f") {
+    const p = patchCache.get(it.pk);
+    if (p) return p.cv ? [p.x, p.y, p.x + p.w, p.y + p.h] : null;
+    const r = op.r || DEF_R;
+    return [r[0], r[1], r[0] + r[2], r[1] + r[3]];
+  }
+  if (forFit && op.er) return null;          // borracha não conta para "ver tudo"
+  let b = opBounds.get(op);
+  if (b) return b;
+  const p = op.p;
+  if (!p || p.length < 2) return null;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (let i = 0; i < p.length; i += 2) {
+    if (p[i] < x0) x0 = p[i]; if (p[i] > x1) x1 = p[i];
+    if (p[i + 1] < y0) y0 = p[i + 1]; if (p[i + 1] > y1) y1 = p[i + 1];
+  }
+  const hw = (op.w || 1) / 2;
+  b = [x0 - hw, y0 - hw, x1 + hw, y1 + hw];
+  opBounds.set(op, b);
+  return b;
+}
+function seqBounds(seq, upto = seq.length) {
+  let b = null;
+  for (let i = 0; i < upto; i++) {
+    const o = boundsOf(seq[i], true);
+    if (!o) continue;
+    if (!b) b = o.slice();
+    else { b[0] = Math.min(b[0], o[0]); b[1] = Math.min(b[1], o[1]); b[2] = Math.max(b[2], o[2]); b[3] = Math.max(b[3], o[3]); }
+  }
+  return b;
+}
+function expandRect(b, minW, minH, pad) {
+  if (!b) b = [DEF_R[0], DEF_R[1], DEF_R[0] + DEF_R[2], DEF_R[1] + DEF_R[3]];
+  const cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+  const w = Math.max((b[2] - b[0]) * (1 + pad * 2), minW);
+  const h = Math.max((b[3] - b[1]) * (1 + pad * 2), minH);
+  return [cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2];
+}
+
+/* ---- balde ---- */
+const patchCache = new Map();
+let patchPx = 0;
+function putPatch(k, p) {
+  patchCache.set(k, p);
+  patchPx += p.px || 0;
+  while (patchPx > PATCH_MAX_PX && patchCache.size > 1) {
+    const [k0, v0] = patchCache.entries().next().value;
+    if (k0 === k) break;
+    patchCache.delete(k0);
+    patchPx -= v0.px || 0;
+  }
+}
+
+const scv = document.createElement("canvas");
+const sctx = scv.getContext("2d", { willReadFrequently: true });
+
+function fillMask(d, RW, RH, x, y, rgb) {
+  if (x < 0 || y < 0 || x >= RW || y >= RH) return null;
+  const i0 = (y * RW + x) * 4;
   const r0 = d[i0], g0 = d[i0 + 1], b0 = d[i0 + 2];
-  const [r1, g1, b1] = hexRgb(hex);
-  if (Math.abs(r0 - r1) + Math.abs(g0 - g1) + Math.abs(b0 - b1) < 10) return;
-
-  const seen = new Uint8Array(W * H);
+  if (Math.abs(r0 - rgb[0]) + Math.abs(g0 - rgb[1]) + Math.abs(b0 - rgb[2]) < 10) return null;
+  const mask = new Uint8Array(RW * RH);
   const ok = p => {
-    if (seen[p]) return false;
+    if (mask[p]) return false;
     const k = p * 4;
     return Math.abs(d[k] - r0) + Math.abs(d[k + 1] - g0) + Math.abs(d[k + 2] - b0) <= FILL_TOL;
   };
+  let minX = RW, minY = RH, maxX = -1, maxY = -1;
   const stack = [x, y];
   while (stack.length) {
     const py = stack.pop();
     let px = stack.pop();
-    let p = py * W + px;
+    let p = py * RW + px;
     if (!ok(p)) continue;
     while (px > 0 && ok(p - 1)) { px--; p--; }
     let up = false, down = false;
-    while (px < W && ok(p)) {
-      seen[p] = 1;
-      const k = p * 4;
-      d[k] = r1; d[k + 1] = g1; d[k + 2] = b1; d[k + 3] = 255;
-      if (py > 0) { if (ok(p - W)) { if (!up) { stack.push(px, py - 1); up = true; } } else up = false; }
-      if (py < H - 1) { if (ok(p + W)) { if (!down) { stack.push(px, py + 1); down = true; } } else down = false; }
+    while (px < RW && ok(p)) {
+      mask[p] = 1;
+      if (px < minX) minX = px;
+      if (px > maxX) maxX = px;
+      if (py > 0) { if (ok(p - RW)) { if (!up) { stack.push(px, py - 1); up = true; } } else up = false; }
+      if (py < RH - 1) { if (ok(p + RW)) { if (!down) { stack.push(px, py + 1); down = true; } } else down = false; }
       px++; p++;
     }
+    if (py < minY) minY = py;
+    if (py > maxY) maxY = py;
   }
-  c.putImageData(img, 0, 0);
+  if (maxX < 0) return null;
+  return { mask, minX, minY, maxX, maxY };
 }
 
-function applyOp(c, o) {
-  if (!o) return;
-  if (o.t === "f") floodFill(c, o.x, o.y, o.c);
-  else paintStroke(c, o);
+function computePatch(seq, i) {
+  const it = seq[i], op = it.op;
+  const r = op.r || DEF_R, s = op.s || 1;
+  const RW = Math.max(1, Math.min(2048, Math.round(r[2] * s)));
+  const RH = Math.max(1, Math.min(2048, Math.round(r[3] * s)));
+  const kx = RW / r[2], ky = RH / r[3];
+  if (scv.width !== RW || scv.height !== RH) { scv.width = RW; scv.height = RH; }
+  sctx.setTransform(1, 0, 0, 1, 0, 0);
+  sctx.fillStyle = PAPER; sctx.fillRect(0, 0, RW, RH);
+  sctx.setTransform(kx, 0, 0, ky, -r[0] * kx, -r[1] * ky);
+  drawSeq(sctx, seq, 0, i, [r[0], r[1], r[0] + r[2], r[1] + r[3]]);
+  sctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  const rgb = hexRgb(op.c);
+  const m = fillMask(sctx.getImageData(0, 0, RW, RH).data, RW, RH,
+                     Math.floor((op.x - r[0]) * kx), Math.floor((op.y - r[1]) * ky), rgb);
+  if (!m) { putPatch(it.pk, { cv: null, px: 0 }); return; }
+
+  const cw = m.maxX - m.minX + 1, ch = m.maxY - m.minY + 1;
+  const pc = document.createElement("canvas");
+  pc.width = cw; pc.height = ch;
+  const pctx = pc.getContext("2d");
+  const out = pctx.createImageData(cw, ch), od = out.data;
+  for (let y = 0; y < ch; y++) {
+    const row = (y + m.minY) * RW + m.minX;
+    for (let x = 0; x < cw; x++) {
+      if (m.mask[row + x]) {
+        const k = (y * cw + x) * 4;
+        od[k] = rgb[0]; od[k + 1] = rgb[1]; od[k + 2] = rgb[2]; od[k + 3] = 255;
+      }
+    }
+  }
+  pctx.putImageData(out, 0, 0);
+  putPatch(it.pk, { cv: pc, x: r[0] + m.minX / kx, y: r[1] + m.minY / ky, w: cw / kx, h: ch / ky, px: cw * ch });
+}
+
+function ensurePatches(seq, upto) {
+  for (let i = 0; i < upto; i++) {
+    const it = seq[i];
+    if (it.op.t === "f" && !patchCache.has(it.pk)) computePatch(seq, i);
+  }
+}
+
+function drawSeq(ctx, seq, from, to, rect) {
+  for (let i = from; i < to; i++) {
+    const it = seq[i];
+    if (rect) {
+      const b = boundsOf(it, false);
+      if (b && (b[2] < rect[0] || b[0] > rect[2] || b[3] < rect[1] || b[1] > rect[3])) continue;
+    }
+    if (it.op.t === "f") {
+      const p = patchCache.get(it.pk);
+      if (p && p.cv) ctx.drawImage(p.cv, p.x, p.y, p.w, p.h);
+    } else {
+      paintStroke(ctx, it.op);
+    }
+  }
+}
+
+function renderFit(ctx, cw, ch, seq, upto, b) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = PAPER; ctx.fillRect(0, 0, cw, ch);
+  const bw = b[2] - b[0], bh = b[3] - b[1];
+  const k = Math.min(cw / bw, ch / bh);
+  ctx.setTransform(k, 0, 0, k, (cw - bw * k) / 2 - b[0] * k, (ch - bh * k) / 2 - b[1] * k);
+  drawSeq(ctx, seq, 0, upto, null);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function exportPNG(seq, upto, b, filename) {
+  const bw = b[2] - b[0], bh = b[3] - b[1];
+  const k = Math.min(3, 2400 / Math.max(bw, bh));
+  const c = document.createElement("canvas");
+  c.width = Math.max(1, Math.round(bw * k)); c.height = Math.max(1, Math.round(bh * k));
+  renderFit(c.getContext("2d"), c.width, c.height, seq, upto, b);
+  const a = document.createElement("a");
+  a.download = filename;
+  a.href = c.toDataURL("image/png");
+  a.click();
+}
+
+/* ---- quadro com arrastar e zoom (usado por quem desenha e pelo adm) ---- */
+class Board {
+  constructor(canvas, o) {
+    this.cv = canvas; this.ctx = canvas.getContext("2d"); this.o = o;
+    this.view = { x: 0, y: 0, z: 1 };
+    this.dpr = 1; this.cssW = 1; this.cssH = 1;
+    this.layer = document.createElement("canvas");
+    this.lctx = this.layer.getContext("2d");
+    this.lview = null; this.lvalid = false;
+    this.raf = 0; this.idleT = 0; this.lastMove = 0;
+    this.ptrs = new Map(); this.mode = null; this.space = false;
+    new ResizeObserver(() => this.resize()).observe(canvas);
+    this.bind();
+  }
+  resize() {
+    const r = this.cv.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+    const first = this.cssW < 2;
+    const cx = this.view.x + this.cssW / this.view.z / 2, cy = this.view.y + this.cssH / this.view.z / 2;
+    this.cssW = r.width; this.cssH = r.height;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.cv.width = Math.round(r.width * this.dpr);
+    this.cv.height = Math.round(r.height * this.dpr);
+    if (!first) { this.view.x = cx - this.cssW / this.view.z / 2; this.view.y = cy - this.cssH / this.view.z / 2; }
+    this.lvalid = false;
+    if (this.o.onResize) this.o.onResize(first);
+    this.request();
+  }
+  rect() { const v = this.view; return [v.x, v.y, v.x + this.cssW / v.z, v.y + this.cssH / v.z]; }
+  // quanto de cada lado está coberto pelos botões flutuantes
+  insetsNow() {
+    const ins = this.o.insets ? this.o.insets() : null;
+    if (!ins) return [0, 0, 0, 0];
+    const [l, t, r, b] = ins.map(v => Math.max(0, v || 0));
+    if (this.cssW - l - r < 120 || this.cssH - t - b < 120) return [0, 0, 0, 0];
+    return [l, t, r, b];
+  }
+  visibleRect() {
+    const [l, t, r, b] = this.insetsNow(), v = this.view;
+    return [v.x + l / v.z, v.y + t / v.z, v.x + (this.cssW - r) / v.z, v.y + (this.cssH - b) / v.z];
+  }
+  toWorld(clientX, clientY) {
+    const r = this.cv.getBoundingClientRect();
+    return [this.view.x + (clientX - r.left) / this.view.z, this.view.y + (clientY - r.top) / this.view.z];
+  }
+  apply(ctx) { const k = this.view.z * this.dpr; ctx.setTransform(k, 0, 0, k, -this.view.x * k, -this.view.y * k); }
+  setView(x, y, z, user) {
+    this.view = { x, y, z: Math.max(ZMIN, Math.min(ZMAX, z)) };
+    this.lastMove = performance.now();
+    if (this.o.onView) this.o.onView(!!user);
+    this.request();
+  }
+  zoomAt(clientX, clientY, f, user) {
+    const r = this.cv.getBoundingClientRect();
+    const sx = clientX - r.left, sy = clientY - r.top, v = this.view;
+    const z = Math.max(ZMIN, Math.min(ZMAX, v.z * f));
+    const wx = v.x + sx / v.z, wy = v.y + sy / v.z;
+    this.setView(wx - sx / z, wy - sy / z, z, user);
+  }
+  zoomCenter(f) {
+    const r = this.cv.getBoundingClientRect(), [l, t, rr, b] = this.insetsNow();
+    this.zoomAt(r.left + l + (r.width - l - rr) / 2, r.top + t + (r.height - t - b) / 2, f, true);
+  }
+  panBy(dx, dy, user) { const v = this.view; this.setView(v.x - dx / v.z, v.y - dy / v.z, v.z, user); }
+  fit(b, user, margin = 0.92) {
+    if (this.cssW < 2) return;
+    const [l, t, r, bo] = this.insetsNow();
+    const aw = this.cssW - l - r, ah = this.cssH - t - bo;
+    const bw = Math.max(1, b[2] - b[0]), bh = Math.max(1, b[3] - b[1]);
+    const z = Math.max(ZMIN, Math.min(ZMAX, Math.min(aw / bw, ah / bh) * margin));
+    const cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2;
+    this.setView(cx - (l + aw / 2) / z, cy - (t + ah / 2) / z, z, user);
+  }
+  invalidate() { this.lvalid = false; this.request(); }
+  request() {
+    if (this.raf) return;
+    this.raf = requestAnimationFrame(() => { this.raf = 0; this.paint(); });
+  }
+  layerOk() {
+    const a = this.lview, b = this.view;
+    return this.lvalid && a && a.x === b.x && a.y === b.y && a.z === b.z &&
+           this.layer.width === this.cv.width && this.layer.height === this.cv.height;
+  }
+  rebuild() {
+    const L = this.layer;
+    if (L.width !== this.cv.width || L.height !== this.cv.height) { L.width = this.cv.width; L.height = this.cv.height; }
+    const c = this.lctx;
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.fillStyle = PAPER; c.fillRect(0, 0, L.width, L.height);
+    this.apply(c);
+    this.o.content(c, this.rect());
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    this.lview = { ...this.view }; this.lvalid = true;
+  }
+  // desenha algo novo direto na imagem pronta, sem refazer tudo
+  addToLayer(fn) {
+    if (!this.layerOk()) { this.invalidate(); return; }
+    this.apply(this.lctx); fn(this.lctx); this.lctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.request();
+  }
+  paint() {
+    if (this.cssW < 2) return;
+    const c = this.ctx;
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    if (!this.layerOk()) {
+      const moving = performance.now() - this.lastMove < 160 && this.lview;
+      if (moving) {
+        // enquanto arrasta/dá zoom, estica a imagem anterior (rápido) e refaz quando parar
+        c.fillStyle = PAPER; c.fillRect(0, 0, this.cv.width, this.cv.height);
+        const a = this.lview, b = this.view, k = b.z / a.z;
+        c.drawImage(this.layer, (a.x - b.x) * b.z * this.dpr, (a.y - b.y) * b.z * this.dpr, this.layer.width * k, this.layer.height * k);
+        clearTimeout(this.idleT);
+        this.idleT = setTimeout(() => this.request(), 180);
+      } else {
+        this.rebuild();
+        c.drawImage(this.layer, 0, 0);
+      }
+    } else {
+      c.drawImage(this.layer, 0, 0);
+    }
+    if (this.o.overlay) { this.apply(c); this.o.overlay(c); c.setTransform(1, 0, 0, 1, 0, 0); }
+  }
+  bind() {
+    const cv = this.cv;
+    cv.addEventListener("pointerdown", e => {
+      try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+      this.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (this.ptrs.size === 2) {
+        if (this.mode === "draw" && this.o.cancel) this.o.cancel();
+        const [p1, p2] = [...this.ptrs.values()];
+        this.mode = "pinch";
+        this.pinch = { d: Math.hypot(p1.x - p2.x, p1.y - p2.y) || 1, cx: (p1.x + p2.x) / 2, cy: (p1.y + p2.y) / 2 };
+        return;
+      }
+      if (this.ptrs.size > 2 || this.mode) return;
+      if ((this.o.panMode && this.o.panMode()) || this.space || e.button === 1) {
+        this.mode = "pan"; this.last = { x: e.clientX, y: e.clientY };
+        cv.classList.add("grabbing");
+        return;
+      }
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      const [wx, wy] = this.toWorld(e.clientX, e.clientY);
+      if (this.o.down && this.o.down(wx, wy)) {
+        this.mode = "draw"; this.start = { x: e.clientX, y: e.clientY }; this.moved = false;
+      }
+    });
+    cv.addEventListener("pointermove", e => {
+      const p = this.ptrs.get(e.pointerId);
+      if (!p) return;
+      p.x = e.clientX; p.y = e.clientY;
+      if (this.mode === "pinch" && this.ptrs.size >= 2) {
+        const [p1, p2] = [...this.ptrs.values()];
+        const d = Math.hypot(p1.x - p2.x, p1.y - p2.y) || 1;
+        const cx = (p1.x + p2.x) / 2, cy = (p1.y + p2.y) / 2;
+        const v = this.view, r = cv.getBoundingClientRect();
+        const z = Math.max(ZMIN, Math.min(ZMAX, v.z * d / this.pinch.d));
+        const wx = v.x + (this.pinch.cx - r.left) / v.z, wy = v.y + (this.pinch.cy - r.top) / v.z;
+        this.setView(wx - (cx - r.left) / z, wy - (cy - r.top) / z, z, true);
+        this.pinch = { d, cx, cy };
+      } else if (this.mode === "pan") {
+        this.panBy(e.clientX - this.last.x, e.clientY - this.last.y, true);
+        this.last = { x: e.clientX, y: e.clientY };
+      } else if (this.mode === "draw") {
+        if (Math.hypot(e.clientX - this.start.x, e.clientY - this.start.y) > 6) this.moved = true;
+        const [wx, wy] = this.toWorld(e.clientX, e.clientY);
+        if (this.o.move) this.o.move(wx, wy);
+      }
+    });
+    const up = e => {
+      if (!this.ptrs.has(e.pointerId)) return;
+      this.ptrs.delete(e.pointerId);
+      if (this.mode === "draw") {
+        this.mode = null;
+        if (this.o.up) this.o.up(this.moved);
+      } else if (this.mode === "pan") {
+        this.mode = null; cv.classList.remove("grabbing");
+      } else if (this.mode === "pinch" && this.ptrs.size === 0) {
+        this.mode = null;
+      }
+    };
+    cv.addEventListener("pointerup", up);
+    cv.addEventListener("pointercancel", up);
+    cv.addEventListener("wheel", e => {
+      e.preventDefault();
+      if (e.ctrlKey || e.metaKey) this.zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.01), true);
+      else if (e.deltaMode !== 0 || (e.deltaX === 0 && Math.abs(e.deltaY) >= 40)) this.zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.15 : 1 / 1.15, true);
+      else this.panBy(-e.deltaX, -e.deltaY, true);
+    }, { passive: false });
+  }
 }
 
 function turnList(epoch) {
@@ -793,22 +1331,27 @@ function subscribeTurns() {
 }
 function unsubscribeTurns() {
   S.turnsUnsubs.forEach(u => u()); S.turnsUnsubs = [];
-  S.turns = {}; parseCache.clear(); baseDirty = true; mineDirty = true;
+  S.turns = {}; parseCache.clear();
 }
 function turnsChanged(key) {
-  if (IS_ADMIN) { scheduleAdminDraw(); historyDirty = true; return; }
+  if (IS_ADMIN) {
+    admBoard.invalidate(); historyDirty = true;
+    if (A.follow && !(S.state && S.state.turn)) followSoon();
+    return;
+  }
   if (S.myTurnId === null) return;
   if (key === tkey(S.myTurnId)) {
     if (S.recovered) return;              // é só o eco do que eu mesmo salvei
     S.recovered = true;
     const v = S.turns[key];
+    // voltei depois de recarregar: recupero o que eu já tinha desenhado
     if (v && v.uid === S.uid && v.e === S.myEpoch && v.s && !S.mine.length) {
-      try { S.mine = JSON.parse(v.s); lastSaved = v.s; mineDirty = true; } catch (e) {}
+      try { S.mine = JSON.parse(v.s); lastSaved = v.s; padBoard.invalidate(); } catch (e) {}
     }
-  } else {
-    baseDirty = true;
+    return;
   }
-  drawPad();
+  padBoard.invalidate();
+  if (!S.viewTouched) fitDrawerSoon();
 }
 
 /* ---- passar a vez (qualquer aparelho pode; a transação garante que acontece uma vez só) ---- */
@@ -1050,19 +1593,21 @@ function onPlayerState() {
 
   if (S.myTurnId !== null && st.epoch !== S.myEpoch) {
     S.myEpoch = st.epoch; S.mine = []; S.redo = []; lastSaved = ""; cur = null; drawing = false;
-    parseCache.clear(); baseDirty = true; mineDirty = true;
+    S.viewTouched = false; padBoard.invalidate(); fitDrawer();
   }
 
-  if (S.myTurnId !== null) { show("draw"); renderBrief(); drawPad(); updateToolButtons(); }
+  if (S.myTurnId !== null) { show("draw"); renderBrief(); updateToolButtons(); }
   else { show("wait"); renderWait(); }
 }
 
 function beginMyTurn(t) {
   S.myTurnId = t.id; S.myEpoch = S.state.epoch;
   S.mine = []; S.redo = []; lastSaved = ""; dirty = false; S.recovered = false;
-  cur = null; drawing = false; baseDirty = true; mineDirty = true;
+  cur = null; drawing = false; pendingFill = null; S.viewTouched = false;
   subscribeTurns();
-  drawPad();
+  padBoard.invalidate(); fitDrawer();
+  $("d-top-card").classList.remove("collapsed");
+  showHint();
   try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
 }
 
@@ -1198,69 +1743,111 @@ $("btn-pass").addEventListener("click", () => {
 });
 
 /* ---- tela de quem desenha ---- */
-const pad = $("pad"), ctx = pad.getContext("2d");
-const [baseCv, bctx] = mkLayer();   // o que as pessoas anteriores fizeram
-const [mineCv, mctx] = mkLayer();   // anterior + o que eu já fiz
-
-function rebuildBase() {
-  blank(bctx);
-  if (S.myTurnId !== null) {
-    for (const t of turnList(S.myEpoch)) if (t.id < S.myTurnId) for (const o of opsOf(t.key)) applyOp(bctx, o);
-  }
-  baseDirty = false; mineDirty = true;
-}
-function rebuildMine() {
-  mctx.drawImage(baseCv, 0, 0);
-  for (const o of S.mine) applyOp(mctx, o);
-  mineDirty = false;
-}
-function drawPad() {
-  if (baseDirty) rebuildBase();
-  if (mineDirty) rebuildMine();
-  ctx.drawImage(mineCv, 0, 0);
-  if (cur) paintStroke(ctx, cur);
-}
-function commitOp(op) {
-  S.mine.push(op);
-  S.redo = [];
-  if (!baseDirty && !mineDirty) applyOp(mctx, op);
-  dirty = true;
-  flushStrokes(false);
-  drawPad();
-  updateToolButtons();
-}
-
 function canDraw() {
   const st = S.state, t = st && st.turn;
   return !IS_ADMIN && S.myTurnId !== null && !!t && t.id === S.myTurnId && t.uid === S.uid &&
          !t.paused && !inCountdown(t) && leftOf(t) > 0;
 }
 
-function pos(e) {
-  const r = pad.getBoundingClientRect();
-  return [Math.round((e.clientX - r.left) / r.width * W), Math.round((e.clientY - r.top) / r.height * H)];
+function drawerSeq() {
+  const lists = [];
+  if (S.myTurnId !== null) for (const t of turnList(S.myEpoch)) if (t.id < S.myTurnId) lists.push(opsOf(t.key));
+  lists.push(S.mine);
+  return buildSeq(lists, S.myEpoch);
 }
+function fitDrawer() {
+  if (padBoard.cssW < 2) return;
+  padBoard.fit(expandRect(seqBounds(drawerSeq()), 960, 640, 0.04), false);
+}
+let fitT = 0;
+function fitDrawerSoon() { clearTimeout(fitT); fitT = setTimeout(() => { if (!S.viewTouched) fitDrawer(); }, 150); }
 
-pad.addEventListener("pointerdown", e => {
-  if (!canDraw()) return;
-  const [x, y] = pos(e);
-  if (S.tool === "fill") { commitOp({ t: "f", c: S.color, x, y }); return; }
-  pad.setPointerCapture(e.pointerId);
-  drawing = true;
-  cur = { c: S.color, w: S.size, p: [x, y] };
-  sendLive();
-  drawPad();
+const padBoard = new Board($("pad"), {
+  panMode: () => S.tool === "move",
+  insets: () => {
+    const cv = $("pad").getBoundingClientRect();
+    const top = $("d-top-card").getBoundingClientRect(), bar = $("d-toolbar").getBoundingClientRect(), zb = $("d-zoom").getBoundingClientRect();
+    const side = window.innerWidth > 760 ? cv.right - zb.left + 8 : 12;
+    return [12, top.bottom - cv.top + 12, side, cv.bottom - bar.top + 12];
+  },
+  down: (wx, wy) => {
+    if (!canDraw()) return false;
+    S.viewTouched = true;
+    if (window.innerWidth <= 760) { $("d-top-card").classList.add("collapsed"); $("d-hint").classList.add("hidden"); }   // no celular, libera espaço ao começar
+    if (S.tool === "fill") { pendingFill = [wx, wy]; return true; }
+    const er = S.tool === "eraser";
+    const size = er ? S.sizes.eraser : S.sizes.pen;
+    // o tamanho segue o que aparece na tela, esteja com zoom ou não
+    cur = { c: er ? PAPER : S.color, w: Math.max(0.01, Math.round(size / padBoard.view.z * 100) / 100), p: [r1(wx), r1(wy)] };
+    if (er) cur.er = 1;
+    drawing = true;
+    sendLive();
+    padBoard.request();
+    return true;
+  },
+  move: (wx, wy) => {
+    if (!drawing || !cur) return;
+    const n = cur.p.length;
+    const dx = wx - cur.p[n - 2], dy = wy - cur.p[n - 1];
+    const min = 2.5 / padBoard.view.z;
+    if (dx * dx + dy * dy < min * min) return;
+    cur.p.push(r1(wx), r1(wy));
+    padBoard.request();
+    if (Date.now() - liveAt > 150) sendLive();
+  },
+  up: moved => {
+    if (pendingFill) {
+      const f = pendingFill; pendingFill = null;
+      if (!moved && canDraw()) commitFill(f[0], f[1]);
+      return;
+    }
+    endStroke();
+  },
+  cancel: () => {                     // entrou um segundo dedo: vira arrastar/zoom
+    pendingFill = null;
+    if (drawing) { drawing = false; cur = null; endLive(); padBoard.request(); }
+  },
+  content: (ctx, rect) => {
+    const seq = drawerSeq();
+    ensurePatches(seq, seq.length);
+    drawSeq(ctx, seq, 0, seq.length, rect);
+  },
+  overlay: ctx => { if (cur) paintStroke(ctx, cur); },
+  onView: user => {
+    if (user) S.viewTouched = true;
+    setText("pad-zoom", Math.round(padBoard.view.z * 100) + "%");
+    sendView();
+  },
+  onResize: () => { if (!S.viewTouched) fitDrawer(); },
 });
-pad.addEventListener("pointermove", e => {
-  if (!drawing || !cur) return;
-  const [x, y] = pos(e);
-  const n = cur.p.length;
-  const dx = x - cur.p[n - 2], dy = y - cur.p[n - 1];
-  if (dx * dx + dy * dy < 9) return;
-  cur.p.push(x, y);
-  drawPad();
-  if (Date.now() - liveAt > 150) sendLive();
-});
+
+function commitOp(op) {
+  S.mine.push(op);
+  S.redo = [];
+  addOpToPad(op);
+  dirty = true;
+  flushStrokes(false);
+  updateToolButtons();
+}
+function addOpToPad(op) {
+  if (op.t === "f") {
+    const seq = drawerSeq();
+    ensurePatches(seq, seq.length);
+    const p = patchCache.get(seq[seq.length - 1].pk);
+    padBoard.addToLayer(c => { if (p && p.cv) c.drawImage(p.cv, p.x, p.y, p.w, p.h); });
+  } else {
+    padBoard.addToLayer(c => paintStroke(c, op));
+  }
+}
+function commitFill(wx, wy) {
+  const b = padBoard, r = b.rect();
+  const f = Math.min(1, 1024 / Math.max(b.cssW, b.cssH));
+  commitOp({
+    t: "f", c: S.color, x: r1(wx), y: r1(wy),
+    r: [r1(r[0]), r1(r[1]), r1(r[2] - r[0]), r1(r[3] - r[1])],
+    s: Math.round(b.view.z * f * 10000) / 10000
+  });
+}
 function endStroke() {
   if (!drawing) return;
   drawing = false;
@@ -1268,37 +1855,25 @@ function endStroke() {
   cur = null;
   if (s && S.myTurnId !== null) commitOp(s);
   endLive();
-  drawPad();
+  padBoard.request();
 }
-pad.addEventListener("pointerup", endStroke);
-pad.addEventListener("pointercancel", endStroke);
-pad.addEventListener("pointerleave", endStroke);
 
 function undo() {
   if (!canDraw() || !S.mine.length) return;
   S.redo.push(S.mine.pop());
-  mineDirty = true; dirty = true;
-  drawPad(); flushStrokes(false); updateToolButtons();
+  dirty = true;
+  padBoard.invalidate(); flushStrokes(false); updateToolButtons();
 }
 function redo() {
   if (!canDraw() || !S.redo.length) return;
   const op = S.redo.pop();
   S.mine.push(op);
-  if (!baseDirty && !mineDirty) applyOp(mctx, op);
+  addOpToPad(op);
   dirty = true;
-  drawPad(); flushStrokes(false); updateToolButtons();
+  flushStrokes(false); updateToolButtons();
 }
 $("btn-undo").addEventListener("click", undo);
 $("btn-redo").addEventListener("click", redo);
-
-function setTool(t) {
-  S.tool = t;
-  $("tool-pen").setAttribute("aria-pressed", t === "pen");
-  $("tool-fill").setAttribute("aria-pressed", t === "fill");
-  pad.classList.toggle("fill", t === "fill");
-}
-$("tool-pen").addEventListener("click", () => setTool("pen"));
-$("tool-fill").addEventListener("click", () => setTool("fill"));
 
 function updateToolButtons() {
   const can = canDraw();
@@ -1306,20 +1881,136 @@ function updateToolButtons() {
   $("btn-redo").disabled = !can || !S.redo.length;
 }
 
+/* ---- ferramentas, cores e tamanhos ---- */
+const sizeKind = () => S.tool === "eraser" ? "eraser" : "pen";
+let sizesShown = null;
+function renderSizes() {
+  const kind = sizeKind();
+  const box = $("sizes");
+  if (sizesShown !== kind) {
+    sizesShown = kind;
+    box.innerHTML = "";
+    PRESETS[kind].forEach((v, i) => {
+      const b = document.createElement("button");
+      b.className = "sz" + (kind === "eraser" ? " er" : "");
+      b.dataset.v = v;
+      b.setAttribute("aria-label", `${kind === "eraser" ? "Borracha" : "Pincel"} tamanho ${v}`);
+      const dot = document.createElement("i");
+      const d = 6 + i * 5;
+      dot.style.width = d + "px"; dot.style.height = d + "px";
+      b.appendChild(dot);
+      b.onclick = () => { S.sizes[kind] = v; renderSizes(); };
+      box.appendChild(b);
+    });
+    const rg = $("size-range");
+    rg.min = SIZE_RANGE[kind][0]; rg.max = SIZE_RANGE[kind][1];
+    rg.setAttribute("aria-label", kind === "eraser" ? "Tamanho da borracha" : "Tamanho do pincel");
+  }
+  [...box.children].forEach(b => b.setAttribute("aria-pressed", +b.dataset.v === S.sizes[kind]));
+  $("size-range").value = S.sizes[kind];
+  setText("size-num", String(S.sizes[kind]));
+  $("size-box").classList.toggle("off", S.tool === "fill" || S.tool === "move");
+}
+$("size-range").addEventListener("input", () => { S.sizes[sizeKind()] = +$("size-range").value; renderSizes(); });
+
+function setTool(t) {
+  S.tool = t;
+  ["pen", "eraser", "fill", "move"].forEach(k => $("tool-" + k).setAttribute("aria-pressed", k === t));
+  const cv = $("pad");
+  cv.classList.toggle("fill", t === "fill");
+  cv.classList.toggle("grab", t === "move" || padBoard.space);
+  renderSizes();
+}
+["pen", "eraser", "fill", "move"].forEach(k => $("tool-" + k).addEventListener("click", () => setTool(k)));
+
+const swBox = $("swatches");
+function selectColor(c, fromCustom) {
+  S.color = c;
+  swBox.querySelectorAll("button.sw").forEach(x => x.setAttribute("aria-pressed", !fromCustom && x.dataset.c === c));
+  $("sw-custom").classList.toggle("on", !!fromCustom);
+  if (S.tool === "eraser" || S.tool === "move") setTool("pen");
+}
+PALETTE.forEach((c, i) => {
+  const b = document.createElement("button");
+  b.className = "sw"; b.style.background = c; b.dataset.c = c;
+  b.setAttribute("aria-pressed", i === 0); b.setAttribute("aria-label", "Cor " + (i + 1));
+  b.onclick = () => selectColor(c, false);
+  swBox.appendChild(b);
+});
+const customSw = document.createElement("label");
+customSw.className = "sw custom"; customSw.id = "sw-custom"; customSw.title = "Escolher qualquer cor";
+customSw.innerHTML = '<input type="color" id="color-pick" value="#FF66CC" aria-label="Escolher qualquer cor"><span class="plus" aria-hidden="true">+</span>';
+swBox.appendChild(customSw);
+const picker = $("color-pick");
+const pickCustom = () => {
+  customSw.classList.add("picked");
+  customSw.style.setProperty("--pick", picker.value);
+  selectColor(picker.value.toUpperCase(), true);
+};
+picker.addEventListener("input", pickCustom);
+picker.addEventListener("change", pickCustom);
+picker.addEventListener("click", () => { if (customSw.classList.contains("picked")) selectColor(picker.value.toUpperCase(), true); });
+
+setTool("pen");
+
+let hintT = 0;
+function showHint() {
+  $("d-hint").classList.remove("hidden");
+  clearTimeout(hintT);
+  hintT = setTimeout(() => $("d-hint").classList.add("hidden"), 10000);
+}
+$("d-top-card").addEventListener("click", () => {
+  const card = $("d-top-card");
+  if (!$("d-hint").classList.contains("hidden")) { $("d-hint").classList.add("hidden"); return; }
+  card.classList.toggle("collapsed");
+});
+
+$("pad-zoom-in").addEventListener("click", () => padBoard.zoomCenter(1.25));
+$("pad-zoom-out").addEventListener("click", () => padBoard.zoomCenter(1 / 1.25));
+$("pad-fit").addEventListener("click", () => { fitDrawer(); S.viewTouched = true; });
+
 document.addEventListener("keydown", e => {
+  const tag = (document.activeElement && document.activeElement.tagName) || "";
+  if (e.code === "Space" && !/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) {
+    const b = IS_ADMIN ? admBoard : padBoard;
+    if (!b.space) { b.space = true; b.cv.classList.add("grab"); }
+    e.preventDefault();
+    return;
+  }
   if (IS_ADMIN) { viewerKeys(e); return; }
   if (S.myTurnId === null || !(e.ctrlKey || e.metaKey)) return;
   const k = e.key.toLowerCase();
   if (k === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
   else if ((k === "z" && e.shiftKey) || k === "y") { e.preventDefault(); redo(); }
 });
+document.addEventListener("keyup", e => {
+  if (e.code !== "Space") return;
+  const b = IS_ADMIN ? admBoard : padBoard;
+  b.space = false;
+  if (!IS_ADMIN && S.tool !== "move") b.cv.classList.remove("grab");
+});
 
+/* ---- envio ao vivo para o adm ---- */
 function sendLive() {
   if (!cur || !S.sid) return;
   liveAt = Date.now();
   set(sRef("live"), { id: S.myTurnId, e: S.myEpoch, c: cur.c, w: cur.w, p: cur.p }).catch(() => {});
 }
 function endLive() { if (S.sid) set(sRef("live"), null).catch(() => {}); }
+
+// conta ao adm qual parte do desenho está na tela de quem desenha
+let viewSentAt = 0, viewTimer = 0;
+function sendView() {
+  if (IS_ADMIN || !S.sid || S.myTurnId === null) return;
+  clearTimeout(viewTimer);
+  const go = () => {
+    if (!S.sid || S.myTurnId === null) return;
+    viewSentAt = Date.now();
+    const r = padBoard.visibleRect();
+    set(sRef("view"), { id: S.myTurnId, e: S.myEpoch, x: r1(r[0]), y: r1(r[1]), w: r1(r[2] - r[0]), h: r1(r[3] - r[1]) }).catch(() => {});
+  };
+  if (Date.now() - viewSentAt > 400) go(); else viewTimer = setTimeout(go, 400);
+}
 
 function flushStrokes(force) {
   if (IS_ADMIN || !S.sid || S.myTurnId === null) return;
@@ -1333,30 +2024,6 @@ function flushStrokes(force) {
   });
 }
 window.addEventListener("beforeunload", () => flushStrokes(true));
-
-const swBox = $("swatches");
-PALETTE.forEach((c, i) => {
-  const b = document.createElement("button");
-  b.className = "sw"; b.style.background = c;
-  b.setAttribute("aria-pressed", i === 0); b.setAttribute("aria-label", "Cor " + (i + 1));
-  b.onclick = () => { S.color = c; [...swBox.children].forEach(x => x.setAttribute("aria-pressed", x === b)); };
-  swBox.appendChild(b);
-});
-const szBox = $("sizes");
-SIZES.forEach((s, i) => {
-  const b = document.createElement("button");
-  b.className = "sz"; b.setAttribute("aria-pressed", i === 1);
-  b.setAttribute("aria-label", "Espessura " + (i + 1));
-  const dot = document.createElement("i");
-  const d = Math.max(5, Math.min(22, s * 0.72));
-  dot.style.width = d + "px"; dot.style.height = d + "px";
-  b.appendChild(dot);
-  b.onclick = () => {
-    S.size = s; setTool("pen");
-    [...szBox.children].forEach(x => x.setAttribute("aria-pressed", x === b));
-  };
-  szBox.appendChild(b);
-});
 
 /* ===================================================================
    5. ORGANIZADOR
@@ -1438,7 +2105,8 @@ function openAdmin(sid) {
   });
   S.unsubs.push(onValue(sRef("state"), s => { S.state = s.val(); onAdminState(); }));
   S.unsubs.push(onValue(sRef("presence"), s => { S.presence = s.val() || {}; renderAdminQueue(); }));
-  S.unsubs.push(onValue(sRef("live"), s => { S.live = s.val(); scheduleAdminDraw(); }));
+  S.unsubs.push(onValue(sRef("live"), s => { S.live = s.val(); admBoard.request(); }));
+  S.unsubs.push(onValue(sRef("view"), s => { A.remoteView = s.val(); if (A.follow) followSoon(); }));
   subscribeTurns();
   $("a-link").textContent = playerLink();
   show("adm");
@@ -1454,8 +2122,9 @@ function onAdminState() {
   const th = $("a-theme-live");
   if (document.activeElement !== th) th.value = st.theme || "";
   renderAdminQueue();
-  scheduleAdminDraw();
-  historyDirty = true;
+  if (A.epoch !== st.epoch) { A.epoch = st.epoch; admBoard.invalidate(); historyDirty = true; }
+  const tid = st.turn ? st.turn.id : null;
+  if (tid !== A.lastTurnId) { A.lastTurnId = tid; historyDirty = true; if (A.follow) followSoon(); }
   adminTick();
 }
 
@@ -1516,101 +2185,148 @@ function renderAdminQueue() {
   });
 }
 
-/* ---- desenho ao vivo do adm (com cache para o balde não pesar) ---- */
-const [prefCv, prefCtx] = mkLayer();
-const [lastCv, lastCtx] = mkLayer();
-const A = { prefSig: null, fullSig: null, lastKey: null, lastRaw: "", lastCount: 0 };
-const thumbs = new Map();
+/* ---- desenho do adm: canvas infinito, só para olhar ---- */
+const A = { follow: true, remoteView: null, lastTurnId: null, epoch: null };
 
-const turnSig = t => t.key + ":" + (t.v.s ? t.v.s.length : 0);
-
-function saveThumb(key, src) {
-  let cv = thumbs.get(key);
-  if (!cv) { cv = document.createElement("canvas"); cv.width = 192; cv.height = 128; thumbs.set(key, cv); }
-  cv.getContext("2d").drawImage(src, 0, 0, 192, 128);
-}
-
-function scheduleAdminDraw() {
-  if (adminRaf) return;
-  adminRaf = requestAnimationFrame(() => { adminRaf = 0; adminRender(); });
-}
-
-function adminRender() {
+function adminSeqFull() {
   const st = S.state;
-  if (!st) return;
-  const out = $("adm-pad").getContext("2d");
-  const list = turnList(st.epoch);
-
-  if (!list.length) {
-    blank(out);
-    A.prefSig = A.fullSig = A.lastKey = null; A.lastRaw = ""; A.lastCount = 0;
-    thumbs.clear();
-  } else {
-    const last = list[list.length - 1];
-    const before = list.slice(0, -1);
-    const pSig = st.epoch + "|" + before.map(turnSig).join(",");
-
-    if (pSig !== A.prefSig) {
-      if (A.fullSig && pSig === A.fullSig) {
-        prefCtx.drawImage(lastCv, 0, 0);
-      } else {
-        blank(prefCtx);
-        for (const t of before) { for (const o of opsOf(t.key)) applyOp(prefCtx, o); saveThumb(t.key, prefCv); }
-      }
-      A.prefSig = pSig; A.lastKey = null;
-    }
-
-    const raw = last.v.s || "[]";
-    const ops = opsOf(last.key);
-    const canAppend = A.lastKey === last.key && ops.length >= A.lastCount && raw.startsWith(A.lastRaw.slice(0, -1));
-    if (!canAppend) { lastCtx.drawImage(prefCv, 0, 0); A.lastCount = 0; }
-    for (let i = A.lastCount; i < ops.length; i++) applyOp(lastCtx, ops[i]);
-    A.lastCount = ops.length; A.lastKey = last.key; A.lastRaw = raw;
-    A.fullSig = st.epoch + "|" + list.map(turnSig).join(",");
-    saveThumb(last.key, lastCv);
-    out.drawImage(lastCv, 0, 0);
-  }
-
-  const lv = S.live;
-  if (lv && st.turn && lv.id === st.turn.id && lv.e === st.epoch) paintStroke(out, lv);
-  if (viewerIdx >= 0) renderViewer();
+  const list = st ? turnList(st.epoch) : [];
+  const lists = [], ends = [];
+  let n = 0;
+  for (const t of list) { const ops = opsOf(t.key); lists.push(ops); n += ops.filter(Boolean).length; ends.push(n); }
+  const seq = buildSeq(lists, st ? st.epoch : 0);
+  seq.ends = ends; seq.list = list;
+  return seq;
 }
 
-setInterval(() => { if (IS_ADMIN && historyDirty) { historyDirty = false; renderHistory(); } }, 1000);
+const admBoard = new Board($("adm-pad"), {
+  panMode: () => true,
+  insets: () => {
+    const cv = $("adm-pad").getBoundingClientRect();
+    const left = $("adm-left").getBoundingClientRect(), dock = $("adm-dock").getBoundingClientRect();
+    const panelWide = window.innerWidth >= 900 && $("screen-adm").classList.contains("panel-open");
+    const r = panelWide ? cv.right - $("adm-panel").getBoundingClientRect().left + 12 : 12;
+    return [12, left.bottom - cv.top + 12, r, cv.bottom - dock.top + 12];
+  },
+  content: (ctx, rect) => {
+    const seq = adminSeqFull();
+    ensurePatches(seq, seq.length);
+    drawSeq(ctx, seq, 0, seq.length, rect);
+  },
+  overlay: ctx => {
+    const st = S.state, lv = S.live;
+    if (st && lv && st.turn && lv.id === st.turn.id && lv.e === st.epoch) paintStroke(ctx, lv);   // traço ao vivo
+  },
+  onView: user => {
+    if (user && A.follow) setFollow(false);
+    setText("adm-zoom", Math.round(admBoard.view.z * 100) + "%");
+  },
+  onResize: () => { if (A.follow) applyFollow(); },
+});
+
+function setFollow(on) {
+  A.follow = on;
+  const b = $("btn-follow");
+  b.setAttribute("aria-pressed", on);
+  b.textContent = on ? "Acompanhando" : "Acompanhar";
+  if (on) applyFollow();
+}
+// mostra a mesma parte do desenho que está na tela de quem desenha
+function applyFollow() {
+  const st = S.state;
+  if (!st || admBoard.cssW < 2) return;
+  const v = A.remoteView;
+  if (st.turn && v && v.id === st.turn.id && v.e === st.epoch) admBoard.fit([v.x, v.y, v.x + v.w, v.y + v.h], false, 1);
+  else admBoard.fit(expandRect(seqBounds(adminSeqFull()), 960, 640, 0.04), false);
+}
+let followRaf = 0;
+function followSoon() {
+  if (followRaf) return;
+  followRaf = requestAnimationFrame(() => { followRaf = 0; if (A.follow) applyFollow(); });
+}
+$("btn-follow").addEventListener("click", () => setFollow(!A.follow));
+
+function setPanel(on) {
+  $("screen-adm").classList.toggle("panel-open", on);
+  const b = $("btn-panel");
+  b.setAttribute("aria-expanded", on);
+  b.textContent = on ? "Fechar painel" : "Painel";
+  if (A.follow) followSoon();
+}
+function setHistoryOpen(on) {
+  $("screen-adm").classList.toggle("history-open", on);
+  $("btn-history").setAttribute("aria-expanded", on);
+  updateHistoryBtn();
+  if (A.follow) followSoon();
+}
+function updateHistoryBtn() {
+  const on = $("screen-adm").classList.contains("history-open"), n = A.histN || 0;
+  $("btn-history").textContent = on ? "Esconder histórico" : `Histórico${n ? " (" + n + ")" : ""}`;
+}
+$("btn-panel").addEventListener("click", () => setPanel(!$("screen-adm").classList.contains("panel-open")));
+$("btn-history").addEventListener("click", () => setHistoryOpen(!$("screen-adm").classList.contains("history-open")));
+setPanel(window.innerWidth >= 900);
+setHistoryOpen(window.innerWidth >= 900);
+$("adm-zoom-in").addEventListener("click", () => admBoard.zoomCenter(1.25));
+$("adm-zoom-out").addEventListener("click", () => admBoard.zoomCenter(1 / 1.25));
+$("adm-fit").addEventListener("click", () => {
+  admBoard.fit(expandRect(seqBounds(adminSeqFull()), 960, 640, 0.04), true);
+});
+
+setInterval(() => {
+  if (IS_ADMIN && historyDirty) { historyDirty = false; renderHistory(); if (viewerIdx >= 0) renderViewer(); }
+}, 1000);
+
+const thumbCv = document.createElement("canvas");
+thumbCv.width = 192; thumbCv.height = 128;
+const thumbCtx = thumbCv.getContext("2d");
 
 function renderHistory() {
   const st = S.state;
   if (!st) return;
-  const list = turnList(st.epoch);
+  const seq = adminSeqFull();
+  ensurePatches(seq, seq.length);
+  const list = seq.list;
+  A.histN = list.length;
+  updateHistoryBtn();
   $("a-history-empty").style.display = list.length ? "none" : "block";
   const box = $("a-history");
   box.innerHTML = "";
+  if (!list.length) return;
+
+  const b = expandRect(seqBounds(seq), 300, 200, 0.05);
+  const bw = b[2] - b[0], bh = b[3] - b[1], k = Math.min(192 / bw, 128 / bh);
+  thumbCtx.setTransform(1, 0, 0, 1, 0, 0);
+  thumbCtx.fillStyle = PAPER; thumbCtx.fillRect(0, 0, 192, 128);
+  thumbCtx.setTransform(k, 0, 0, k, (192 - bw * k) / 2 - b[0] * k, (128 - bh * k) / 2 - b[1] * k);
+
+  let from = 0;
   list.forEach((t, i) => {
+    drawSeq(thumbCtx, seq, from, seq.ends[i], null);
+    from = seq.ends[i];
     const isCur = st.turn && tkey(st.turn.id) === t.key;
-    const b = document.createElement("button");
-    b.className = "tl" + (isCur ? " cur" : "");
-    b.setAttribute("aria-label", `Ver maior a vez ${i + 1}, de ${t.v.name || "alguém"}`);
+    const btn = document.createElement("button");
+    btn.className = "tl" + (isCur ? " cur" : "");
+    btn.setAttribute("aria-label", `Ver maior a vez ${i + 1}, de ${t.v.name || "alguém"}`);
     const cv = document.createElement("canvas");
     cv.width = 192; cv.height = 128;
-    const tc = cv.getContext("2d");
-    const th = thumbs.get(t.key);
-    if (th) tc.drawImage(th, 0, 0); else { tc.fillStyle = PAPER; tc.fillRect(0, 0, 192, 128); }
+    cv.getContext("2d").drawImage(thumbCv, 0, 0);
     const sm = document.createElement("small");
     sm.textContent = `Vez ${i + 1}` + (isCur ? " · agora" : "");
     const nm = document.createElement("b");
     nm.textContent = t.v.name || "alguém";
-    b.append(cv, sm, nm);
-    b.onclick = () => openViewer(i);
-    box.appendChild(b);
+    btn.append(cv, sm, nm);
+    btn.onclick = () => openViewer(i);
+    box.appendChild(btn);
   });
+  thumbCtx.setTransform(1, 0, 0, 1, 0, 0);
 }
 
 /* ---- visualizador grande ---- */
-let viewerIdx = -1, viewerSig = "";
-const [viewCv, viewCtx] = mkLayer();
+let viewerIdx = -1;
 
 function openViewer(i) {
-  viewerIdx = i; viewerSig = "";
+  viewerIdx = i;
   $("viewer").classList.remove("hidden");
   renderViewer();
   $("v-close").focus();
@@ -1622,29 +2338,21 @@ function closeViewer() {
 function renderViewer() {
   const st = S.state;
   if (viewerIdx < 0 || !st) return;
-  const list = turnList(st.epoch);
+  const seq = adminSeqFull();
+  const list = seq.list;
   if (!list.length) { closeViewer(); return; }
   viewerIdx = Math.min(viewerIdx, list.length - 1);
-  const i = viewerIdx, t = list[i], isLast = i === list.length - 1;
-
-  const sig = st.epoch + "|" + i + "|" + list.slice(0, i + 1).map(turnSig).join(",") + (isLast ? "|L" : "");
-  if (sig !== viewerSig) {
-    viewerSig = sig;
-    const out = $("v-canvas").getContext("2d");
-    if (isLast && A.lastKey === t.key) {
-      out.drawImage(lastCv, 0, 0);
-    } else {
-      blank(viewCtx);
-      for (let j = 0; j <= i; j++) for (const o of opsOf(list[j].key)) applyOp(viewCtx, o);
-      out.drawImage(viewCv, 0, 0);
-    }
-  }
+  const i = viewerIdx, t = list[i];
+  ensurePatches(seq, seq.length);
+  const b = expandRect(seqBounds(seq), 300, 200, 0.05);   // mesmo enquadramento em todas as vezes
+  const cv = $("v-canvas");
+  renderFit(cv.getContext("2d"), cv.width, cv.height, seq, seq.ends[i], b);
 
   const isCur = st.turn && tkey(st.turn.id) === t.key;
   setText("v-step", `Vez ${i + 1} de ${list.length} · o desenho até aqui` + (isCur ? " · ainda desenhando" : ""));
   setHTML("v-title", `Feita por <b>${escapeHtml(t.v.name || "alguém")}</b>`);
   $("v-prev").disabled = i === 0;
-  $("v-next").disabled = isLast;
+  $("v-next").disabled = i === list.length - 1;
 }
 function viewerStep(d) {
   if (viewerIdx < 0) return;
@@ -1665,11 +2373,11 @@ $("v-next").addEventListener("click", () => viewerStep(1));
 $("v-png").addEventListener("click", () => {
   const st = S.state;
   if (viewerIdx < 0 || !st) return;
-  const t = turnList(st.epoch)[viewerIdx];
-  const a = document.createElement("a");
-  a.download = `passa-o-desenho-vez-${viewerIdx + 1}-${slug(t && t.v.name)}.png`;
-  a.href = $("v-canvas").toDataURL("image/png");
-  a.click();
+  const seq = adminSeqFull();
+  ensurePatches(seq, seq.length);
+  const t = seq.list[viewerIdx];
+  exportPNG(seq, seq.ends[viewerIdx], expandRect(seqBounds(seq), 300, 200, 0.05),
+            `passa-o-desenho-vez-${viewerIdx + 1}-${slug(t && t.v.name)}.png`);
 });
 
 /* ---- tempo: vez atual ---- */
@@ -1737,10 +2445,9 @@ $("btn-a-copy").addEventListener("click", async () => {
   setTimeout(() => setText("btn-a-copy", "Copiar link"), 2500);
 });
 $("btn-a-png").addEventListener("click", () => {
-  const a = document.createElement("a");
-  a.download = "passa-o-desenho.png";
-  a.href = lastCv.toDataURL("image/png");
-  a.click();
+  const seq = adminSeqFull();
+  ensurePatches(seq, seq.length);
+  exportPNG(seq, seq.length, expandRect(seqBounds(seq), 300, 200, 0.04), "passa-o-desenho.png");
 });
 
 $("btn-a-clear").addEventListener("click", async () => {
@@ -1771,8 +2478,8 @@ function adminCleanup() {
   closeViewer();
   localStorage.removeItem("pd_admin_sid");
   S.sid = null; S.state = null; S.live = null;
-  A.prefSig = A.fullSig = A.lastKey = null; A.lastRaw = ""; A.lastCount = 0;
-  thumbs.clear();
+  A.remoteView = null; A.lastTurnId = null; A.epoch = null;
+  setFollow(true);
   $("btn-open").disabled = false;
   $("a-history").innerHTML = "";
 }
